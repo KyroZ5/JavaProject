@@ -33,7 +33,7 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
 	   add(P2);
 	   add(P3);
 	   add(P4);
-	   
+////////////////////
 	   // Panel 1
 	   P1.setLayout(null);
 	   P1.setBorder(BorderFactory.createTitledBorder("Panel 1"));
