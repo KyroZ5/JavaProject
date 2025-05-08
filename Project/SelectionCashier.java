@@ -40,6 +40,8 @@ public class SelectionCashier extends JFrame implements ActionListener{
 	JLabel lblAdmin = new JLabel("Admin");
 	JLabel lblInven = new JLabel("Inventory");
 	
+	JButton btnLogout = new JButton("Logout");
+	
     public SelectionCashier() {
     	setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
 		setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
@@ -53,6 +55,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
         newLogin.add(btnCashier);
         newLogin.add(btnAdmin);
         newLogin.add(btnInventory);
+        newLogin.add(btnLogout);
         newLogin.add(lblAdd);
         newLogin.add(lblAdd2);
         newLogin.add(lblCashier);
@@ -60,8 +63,9 @@ public class SelectionCashier extends JFrame implements ActionListener{
         newLogin.add(lblInven);
         newLogin.isOpaque();
         newLogin.setBackground(Color.CYAN);     
-        newLogin.setBounds(10,5,465,180);
+        newLogin.setBounds(700,400,460,200);
 		newLogin.setLayout(null);
+		newLogin.setBorder(BorderFactory.createTitledBorder(""));
 		btnAdd.setBounds(40,40,80,80);
 		//btnAdd.setText("");
 		btnCashier.setBounds(140,40,80,80);
@@ -70,6 +74,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
 		//btnAdmin.setText("");
 		btnInventory.setBounds(340,40,80,80);
 		//btnInventory.setText("");
+		btnLogout.setBounds(340,160,100,30);
 		lblAdd.setBounds(60,95,120,80);
 		lblAdd.setEnabled(false); 
 		lblAdd2.setBounds(55,110,120,80);
@@ -79,7 +84,6 @@ public class SelectionCashier extends JFrame implements ActionListener{
 		lblAdmin.setEnabled(false); 
 		lblInven.setBounds(350,95,120,80);
 		lblInven.setEnabled(false); 
-		
 		
 		btnAdd.setEnabled(false); 
 		btnCashier.setEnabled(true); 
@@ -91,6 +95,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
 		btnAdmin.addActionListener(this);
 		btnInventory.addActionListener(this);
 		
+		btnLogout.addActionListener(this);
     }
 
 	
@@ -113,6 +118,11 @@ public class SelectionCashier extends JFrame implements ActionListener{
    			//JOptionPane.showMessageDialog(null, "Welcome ","Login",JOptionPane.INFORMATION_MESSAGE);
    		}else if(ev.getSource()==btnInventory) {
    			//JOptionPane.showMessageDialog(null, "Welcome ","Login",JOptionPane.INFORMATION_MESSAGE);
+   		}else if(ev.getSource()==btnLogout) {
+   			Login log = new Login();
+   			log.setVisible(true);
+   			//JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
+   			this.dispose();
    		}
    	}
    }

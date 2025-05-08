@@ -1,6 +1,8 @@
 	package Project;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
@@ -40,6 +42,8 @@ public class SelectionAdmin extends JFrame implements ActionListener{
 	JLabel lblAdmin = new JLabel("Admin");
 	JLabel lblInven = new JLabel("Inventory");
 	
+	JButton btnLogout = new JButton("Logout");
+	
     public SelectionAdmin() {
     	setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
 		setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
@@ -53,6 +57,7 @@ public class SelectionAdmin extends JFrame implements ActionListener{
         newLogin.add(btnCashier);
         newLogin.add(btnAdmin);
         newLogin.add(btnInventory);
+        newLogin.add(btnLogout);
         newLogin.add(lblAdd);
         newLogin.add(lblAdd2);
         newLogin.add(lblCashier);
@@ -60,8 +65,9 @@ public class SelectionAdmin extends JFrame implements ActionListener{
         newLogin.add(lblInven);
         newLogin.isOpaque();
         newLogin.setBackground(Color.CYAN);     
-        newLogin.setBounds(10,5,465,180);
+        newLogin.setBounds(700,400,460,200);
 		newLogin.setLayout(null);
+		newLogin.setBorder(BorderFactory.createTitledBorder(""));
 		btnAdd.setBounds(40,40,80,80);
 		//btnAdd.setText("");
 		btnCashier.setBounds(140,40,80,80);
@@ -70,6 +76,7 @@ public class SelectionAdmin extends JFrame implements ActionListener{
 		//btnAdmin.setText("");
 		btnInventory.setBounds(340,40,80,80);
 		//btnInventory.setText("");
+		btnLogout.setBounds(340,160,100,30);
 		lblAdd.setBounds(60,95,120,80);
 		lblAdd.setEnabled(true); 
 		lblAdd2.setBounds(55,110,120,80);
@@ -85,15 +92,23 @@ public class SelectionAdmin extends JFrame implements ActionListener{
 		btnCashier.setEnabled(true); 
 		btnAdmin.setEnabled(true);
 		btnInventory.setEnabled(true);
-		
+	
 		btnAdd.addActionListener(this); 
 		btnCashier.addActionListener(this); 
 		btnAdmin.addActionListener(this);
 		btnInventory.addActionListener(this);
 		
+		btnLogout.addActionListener(this);
+		
+		
     }
 
-    public static void main(String[] args) {
+    private Border BorderFactory() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static void main(String[] args) {
     	SelectionAdmin login = new SelectionAdmin();
         login.setVisible(true);
 	
@@ -101,8 +116,8 @@ public class SelectionAdmin extends JFrame implements ActionListener{
     @Override
    	public void actionPerformed(ActionEvent ev) {
    		if(ev.getSource()==btnAdd) {
-   			Add login = new Add();
-   	        login.setVisible(true);
+   		 Login loginInstance = new Login(); // Ensure a Login instance exists
+         new Add(loginInstance).setVisible(true); // Pass Login reference
    			JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
    			this.dispose();
    		}else if(ev.getSource()==btnCashier) {
@@ -119,6 +134,11 @@ public class SelectionAdmin extends JFrame implements ActionListener{
    			Inventory login = new Inventory();
    	        login.setVisible(true);
    			JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
+   			this.dispose();
+   		}else if(ev.getSource()==btnLogout) {
+   			Login log = new Login();
+   			log.setVisible(true);
+   			//JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
    			this.dispose();
    		}
    	}
