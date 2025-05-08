@@ -8,57 +8,49 @@ import javax.swing.event.*;
 public class Add extends JFrame implements ActionListener, ItemListener, ChangeListener {
 
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	  private Login loginInstance;
+
+	  JLabel lblregUsername = new JLabel("Username: ");
+	  JLabel lblregPassword = new JLabel("Password: ");
+	  JTextField txtregUsername = new JPasswordField(15);
+	  JPasswordField txtregPassword = new JPasswordField(15);
+	  JButton btnregLogin = new JButton("Register");
+	  JButton btnregCancel = new JButton("Cancel");
+	  
+	public Add(Login loginInstance) {
+		
+	this.loginInstance = loginInstance; // Store the reference
 	
-	// Panel 1
-	JPanel P1 = new JPanel();
-	
-	// Panel 2
-	JPanel P2 = new JPanel();
-	
-	// Panel 3
-	JPanel P3 = new JPanel();
-	
-	// Panel 4
-	JPanel P4 = new JPanel();
-	
-	public Add() {
-	   setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
-	   setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
-	   setLocationRelativeTo(null);
-	   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
+	setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
+	setLocationRelativeTo(null);
 	   setLayout(null);
 	   setTitle("Add Account");
 	   
-	   add(P1);
-	   add(P2);
-	   add(P3);
-	   add(P4);
-////////////////////
-	   // Panel 1
-	   P1.setLayout(null);
-	   P1.setBorder(BorderFactory.createTitledBorder("Panel 1"));
-	   P1.setBounds(10, 10, 1000, 500);
-	   // Panel 2
-	   P2.setLayout(null);
-	   P2.setBorder(BorderFactory.createTitledBorder("Panel 2"));
-	   P2.setBounds(1050, 10, 500, 500);
-	   // Panel 3
-	   P3.setLayout(null);
-	   P3.setBorder(BorderFactory.createTitledBorder("Panel 3"));
-	   P3.setBounds(10, 525, 1000, 300);
-	   // Panel 4
-	   P4.setLayout(null);
-	   P4.setBorder(BorderFactory.createTitledBorder("Panel 4"));
-	   P4.setBounds(1050, 525, 500, 300);
+	   add(lblregUsername);
+       add(lblregPassword);
+       add(txtregUsername);
+       add(txtregPassword);
+       add(btnregLogin);
+       add(btnregCancel);   
+	   
+       lblregUsername.setBounds(70,80,150,30);
+       txtregUsername.setBounds(150,70,150,30);
+       lblregPassword.setBounds(70,120,150,30);
+       txtregPassword.setBounds(150,120,150,30);
+       btnregCancel.setBounds(80,170,100,30);
+       btnregLogin.setBounds(200,170,100,30);
+      
+       btnregLogin.addActionListener(this);	
 	   
 
 	}
 	
 	public static void main(String[] args) {
-		Add login = new Add();
-        login.setVisible(true);
+        Login loginInstance = new Login(); // Ensure a Login instance exists
+        new Add(loginInstance).setVisible(true); // Pass Login reference
+	 
 	}
-
 	@Override
 	public void stateChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
@@ -71,10 +63,19 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
 		
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	   @Override
+	    public void actionPerformed(ActionEvent ev) {
+	        if (ev.getSource() == btnregLogin) {
+	            String user = txtregUsername.getText().trim();
+	            String pass = new String(txtregPassword.getPassword()).trim();
 
-}
+	            if (!user.isEmpty() && !pass.isEmpty()) {
+	                loginInstance.username.add(user);
+	                loginInstance.password.add(pass);
+	                JOptionPane.showMessageDialog(null, "User registered successfully!", "Registration", JOptionPane.INFORMATION_MESSAGE);
+	            } else {
+	                JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+	            }
+	        }
+	    }
+	}
