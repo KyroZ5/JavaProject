@@ -3,7 +3,8 @@ package Project;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 public class Login extends JFrame implements ActionListener {
     
@@ -49,7 +50,7 @@ public class Login extends JFrame implements ActionListener {
         txtPassword.setBounds(150, 100, 150, 30);
         btnLogin.setBounds(250, 250, 100, 30);
         btnCancel.setBounds(50, 250, 100, 30);
-    
+
         btnLogin.addActionListener(this);
         btnCancel.addActionListener(this);
 
@@ -61,9 +62,13 @@ public class Login extends JFrame implements ActionListener {
         employeeNumber.add(102);
         username.add("admin");
         password.add("admin");
-        
+
+        // **Load registered users**
+        loadUsersFromFile();  
+
         size = username.size(); // Ensure size is updated correctly
     }
+
 
     public static void main(String[] args) {
         Login log = new Login();
@@ -87,14 +92,13 @@ public class Login extends JFrame implements ActionListener {
                     authenticated = true;
                     JOptionPane.showMessageDialog(null, "Welcome, " + UserL, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
 
-                    if (UserL.equalsIgnoreCase("cashier")) {
-                        new SelectionCashier().setVisible(true);
-                    } else if (UserL.equalsIgnoreCase("admin")) {
+                    if (UserL.equalsIgnoreCase("admin") && PassL.equals("admin")) { 
                         new SelectionAdmin().setVisible(true);
+                        setVisible(false);
+                    } else if (UserL.equalsIgnoreCase(username.get(i))) { 
+                        new SelectionCashier().setVisible(true);
+                        setVisible(false);
                     }
-
-                    this.dispose();
-                    break;
                 }
             }
 
@@ -102,5 +106,20 @@ public class Login extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Invalid username or password!", "Invalid Login", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }private void loadUsersFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader("users.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    username.add(parts[0]);
+                    password.add(parts[1]);
+                }
+            }
+            size = username.size(); // Update size
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+ 
 }

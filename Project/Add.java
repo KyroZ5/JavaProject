@@ -3,19 +3,25 @@ package Project;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.io.*;
 import javax.swing.event.*;
 
 public class Add extends JFrame implements ActionListener, ItemListener, ChangeListener {
 
-	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+	  Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	  private Login loginInstance;
 
 	  JLabel lblregUsername = new JLabel("Username: ");
 	  JLabel lblregPassword = new JLabel("Password: ");
-	  JTextField txtregUsername = new JPasswordField(15);
-	  JPasswordField txtregPassword = new JPasswordField(15);
+	  JTextField txtregUsername = new JTextField();
+	  JPasswordField txtregPassword = new JPasswordField();
 	  JButton btnregLogin = new JButton("Register");
 	  JButton btnregCancel = new JButton("Cancel");
+	  
+	  JButton btnLogout = new JButton("Logout");
+	  
+	  private static final String FILE_NAME = "users.txt"; // File to store users
 	  
 	public Add(Login loginInstance) {
 		
@@ -33,6 +39,7 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
        add(txtregPassword);
        add(btnregLogin);
        add(btnregCancel);   
+	   add(btnLogout);
 	   
        lblregUsername.setBounds(70,80,150,30);
        txtregUsername.setBounds(150,70,150,30);
@@ -40,10 +47,11 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
        txtregPassword.setBounds(150,120,150,30);
        btnregCancel.setBounds(80,170,100,30);
        btnregLogin.setBounds(200,170,100,30);
-      
        btnregLogin.addActionListener(this);	
-	   
-
+       
+       btnLogout.setBounds(200,220,100,30);
+       btnLogout.setEnabled(true);
+   	   btnLogout.addActionListener(this);
 	}
 	
 	public static void main(String[] args) {
@@ -63,19 +71,35 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
 		
 	}
 
-	   @Override
-	    public void actionPerformed(ActionEvent ev) {
-	        if (ev.getSource() == btnregLogin) {
-	            String user = txtregUsername.getText().trim();
-	            String pass = new String(txtregPassword.getPassword()).trim();
+	@Override
+    public void actionPerformed(ActionEvent ev) {
+        if (ev.getSource() == btnregLogin) {
+            String user = txtregUsername.getText().trim();
+            String pass = new String(txtregPassword.getPassword()).trim();
 
-	            if (!user.isEmpty() && !pass.isEmpty()) {
-	                loginInstance.username.add(user);
-	                loginInstance.password.add(pass);
-	                JOptionPane.showMessageDialog(null, "User registered successfully!", "Registration", JOptionPane.INFORMATION_MESSAGE);
-	            } else {
-	                JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-	            }
-	        }
-	    }
-	}
+            if (!user.isEmpty() && !pass.isEmpty()) {
+                loginInstance.username.add(user);
+                loginInstance.password.add(pass);
+                saveUserToFile(user, pass); // Save user credentials to file
+
+                JOptionPane.showMessageDialog(null, "User registered successfully!", "Registration", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else if (ev.getSource() == btnLogout) {
+        	setVisible(false);
+            new Login().setVisible(true);
+        }
+    }
+
+    private void saveUserToFile(String user, String pass) {
+        try (FileWriter fw = new FileWriter(FILE_NAME, true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+
+            out.println(user + "," + pass); // Save username,password format
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
