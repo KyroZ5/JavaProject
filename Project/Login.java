@@ -36,7 +36,7 @@ public class Login extends JFrame implements ActionListener{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(null);
 		setTitle("Login Form");
-		
+			
 		add(p1);
 		//add(log);
 		p1.add(lblUsername);
