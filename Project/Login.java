@@ -50,7 +50,7 @@ public class Login extends JFrame implements ActionListener{
 		p1.add(btnLogin);
 		p1.add(btnCancel);
 		p1.isOpaque();
-		p1.setBackground(Color.CYAN);
+		//p1.setBackground(Color.CYAN);
 		p1.setBounds(750,350,400,300);
 		p1.setLayout(null);
 		p1.setBorder(BorderFactory.createTitledBorder(""));
