@@ -118,27 +118,27 @@ public class SelectionAdmin extends JFrame implements ActionListener{
    		 Login loginInstance = new Login(); // Ensure a Login instance exists
          new Add(loginInstance).setVisible(true); // Pass Login reference
    			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			this.dispose();
+   			setVisible(false);
    		}else if(ev.getSource()==btnCashier) {
    			Cashier login = new Cashier();
    	        login.setVisible(true);
    			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			this.dispose();
+   			setVisible(false);
    		}else if(ev.getSource()==btnAdmin) {
    			Admin login = new Admin();
    	        login.setVisible(true);
    			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			this.dispose();
+   			setVisible(false);
    		}else if(ev.getSource()==btnInventory) {
    			Inventory login = new Inventory();
    	        login.setVisible(true);
    			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			this.dispose();
+   			setVisible(false);
    		}else if(ev.getSource()==btnLogout) {
    			Login log = new Login();
    			log.setVisible(true);
    			//JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
-   			this.dispose();
+   			setVisible(false);
    		}
    	}
   }
