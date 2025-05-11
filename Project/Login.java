@@ -14,7 +14,6 @@ public class Login extends JFrame implements ActionListener {
     ArrayList<String> password = new ArrayList<>();
     int size; 
     
-    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
  
     JPanel p1 = new JPanel();
@@ -29,10 +28,8 @@ public class Login extends JFrame implements ActionListener {
 
     public Login() {
     	setSize(screenSize.width, screenSize.height);
-    	gd.setFullScreenWindow(null);
-    	//setSize(screenSize.width, screenSize.height);
-    	//setExtendedState(JFrame.MAXIMIZED_BOTH);
-    	//setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+    	setLocationRelativeTo(null);
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	setTitle("Login Form");
     	setLayout(null);
