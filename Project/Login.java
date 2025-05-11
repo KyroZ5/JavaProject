@@ -1,146 +1,125 @@
-	package Project;
+package Project;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.event.*;
+import java.io.*;
+import java.util.*;
 
-public class SelectionAdmin extends JFrame implements ActionListener{
-	
-	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+public class Login extends JFrame implements ActionListener {
+    
+    ArrayList<Integer> employeeNumber = new ArrayList<>();
+    ArrayList<String> username = new ArrayList<>();
+    ArrayList<String> password = new ArrayList<>();
+    int size; 
+    
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-	JPanel newLogin = new JPanel();
-	ImageIcon ALogo = new ImageIcon("./img/person-add.png");
-	Image imgA = ALogo.getImage();
-	Image newALogo = imgA.getScaledInstance(80,80,java.awt.Image.SCALE_SMOOTH);
-	ImageIcon aLogo = new ImageIcon(newALogo);
-	JButton btnAdd = new JButton(aLogo);
-	
-	ImageIcon BLogo = new ImageIcon("./img/cashier.jpg");
-	Image imgB = BLogo.getImage();
-	Image newBLogo = imgB.getScaledInstance(80,80,java.awt.Image.SCALE_SMOOTH);
-	ImageIcon bLogo = new ImageIcon(newBLogo);
-	JButton btnCashier = new JButton(bLogo);
-	
-	ImageIcon CLogo = new ImageIcon("./img/admin.png");
-	Image imgC = CLogo.getImage();
-	Image newCLogo = imgC.getScaledInstance(75,80,java.awt.Image.SCALE_SMOOTH);
-	ImageIcon cLogo = new ImageIcon(newCLogo);
-	JButton btnAdmin = new JButton(cLogo);
-	
-	ImageIcon DLogo = new ImageIcon("./img/inventory.png");
-	Image imgD = DLogo.getImage();
-	Image newDLogo = imgD.getScaledInstance(80,80,java.awt.Image.SCALE_SMOOTH);
-	ImageIcon dLogo = new ImageIcon(newDLogo);
-	JButton btnInventory = new JButton(dLogo);
-	
-	JLabel lblAdd = new JLabel("Create");
-	JLabel lblAdd2 = new JLabel("Account");
-	JLabel lblCashier = new JLabel("Cashier");
-	JLabel lblAdmin = new JLabel("Admin");
-	JLabel lblInven = new JLabel("Inventory");
-	
-	JButton btnLogout = new JButton("Logout");
-	
-    public SelectionAdmin() {
-    	setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
-		setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
-		setLocationRelativeTo(null);
+    JPanel p1 = new JPanel();
+
+    JLabel lblUsername = new JLabel("Username: ");
+    JLabel lblPassword = new JLabel("Password: ");
+    JTextField txtUsername = new JTextField(15);
+    JPasswordField txtPassword = new JPasswordField(15);
+
+    JButton btnLogin = new JButton("Login");
+    JButton btnCancel = new JButton("Cancel");
+
+    public Login() {
+        setSize(screenSize.width, screenSize.height);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Login Form");
         setLayout(null);
-        setTitle("Selection");
-        
-        add(newLogin);
-        newLogin.add(btnAdd);
-        newLogin.add(btnCashier);
-        newLogin.add(btnAdmin);
-        newLogin.add(btnInventory);
-        newLogin.add(btnLogout);
-        newLogin.add(lblAdd);
-        newLogin.add(lblAdd2);
-        newLogin.add(lblCashier);
-        newLogin.add(lblAdmin);
-        newLogin.add(lblInven);
-        newLogin.isOpaque();
-        newLogin.setBackground(Color.CYAN);     
-        newLogin.setBounds(700,400,460,200);
-		newLogin.setLayout(null);
-		newLogin.setBorder(BorderFactory.createTitledBorder(""));
-		btnAdd.setBounds(40,40,80,80);
-		//btnAdd.setText("");
-		btnCashier.setBounds(140,40,80,80);
-		//btnCashier.setText("");
-		btnAdmin.setBounds(240,40,80,80);
-		//btnAdmin.setText("");
-		btnInventory.setBounds(340,40,80,80);
-		//btnInventory.setText("");
-		btnLogout.setBounds(340,160,100,30);
-		lblAdd.setBounds(60,95,120,80);
-		lblAdd.setEnabled(true); 
-		lblAdd2.setBounds(55,110,120,80);
-		lblAdd2.setEnabled(true); 
-		lblCashier.setBounds(157,95,120,80);
-		lblAdmin.setBounds(260,95,120,80);
-		lblAdmin.setEnabled(true); 
-		lblInven.setBounds(350,95,120,80);
-		lblInven.setEnabled(true); 
-		
-		
-		btnAdd.setEnabled(true); 
-		btnCashier.setEnabled(true); 
-		btnAdmin.setEnabled(true);
-		btnInventory.setEnabled(true);
-	
-		btnAdd.addActionListener(this); 
-		btnCashier.addActionListener(this); 
-		btnAdmin.addActionListener(this);
-		btnInventory.addActionListener(this);
-		
-		btnLogout.addActionListener(this);
-		
-		
+
+        add(p1);
+        p1.add(lblUsername);
+        p1.add(lblPassword);
+        p1.add(txtUsername);
+        p1.add(txtPassword);
+        p1.add(btnLogin);
+        p1.add(btnCancel);
+        p1.setBounds(750, 350, 400, 300);
+        p1.setLayout(null);
+        p1.setBorder(BorderFactory.createTitledBorder(""));
+
+        lblUsername.setBounds(50, 50, 100, 30);
+        txtUsername.setBounds(150, 50, 150, 30);
+        lblPassword.setBounds(50, 100, 100, 30);
+        txtPassword.setBounds(150, 100, 150, 30);
+        btnLogin.setBounds(250, 250, 100, 30);
+        btnCancel.setBounds(50, 250, 100, 30);
+
+        btnLogin.addActionListener(this);
+        btnCancel.addActionListener(this);
+
+        // Sample users
+        employeeNumber.add(101);
+        username.add("cashier");
+        password.add("cashier");
+
+        employeeNumber.add(102);
+        username.add("admin");
+        password.add("admin");
+
+        // **Load registered users**
+        loadUsersFromFile();  
+
+        size = username.size(); // Ensure size is updated correctly
     }
 
-    private Border BorderFactory() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	public static void main(String[] args) {
-    	SelectionAdmin login = new SelectionAdmin();
-        login.setVisible(true);
-	
+    public static void main(String[] args) {
+        Login log = new Login();
+        log.setVisible(true);
     }
+
     @Override
-   	public void actionPerformed(ActionEvent ev) {
-   		if(ev.getSource()==btnAdd) {
-   		 Login loginInstance = new Login(); // Ensure a Login instance exists
-         new Add(loginInstance).setVisible(true); // Pass Login reference
-   			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
-   		}else if(ev.getSource()==btnCashier) {
-   			Cashier login = new Cashier();
-   	        login.setVisible(true);
-   			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
-   		}else if(ev.getSource()==btnAdmin) {
-   			Admin login = new Admin();
-   	        login.setVisible(true);
-   			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
-   		}else if(ev.getSource()==btnInventory) {
-   			Inventory login = new Inventory();
-   	        login.setVisible(true);
-   			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
-   		}else if(ev.getSource()==btnLogout) {
-   			Login log = new Login();
-   			log.setVisible(true);
-   			//JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
-   		}
-   	}
-  }
+    public void actionPerformed(ActionEvent ev) {
+        if (ev.getSource() == btnCancel) {
+            int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to exit?", "Exit Form", JOptionPane.YES_NO_OPTION);
+            if (x == JOptionPane.YES_OPTION) {
+                System.exit(0);
+            }
+        } else if (ev.getSource() == btnLogin) {
+            String UserL = txtUsername.getText().trim();
+            String PassL = new String(txtPassword.getPassword()).trim(); // Proper handling for passwords
+            boolean authenticated = false;
 
+            for (int i = 0; i < size; i++) {
+                if (username.get(i).equalsIgnoreCase(UserL) && password.get(i).equals(PassL)) {
+                    authenticated = true;
+                    JOptionPane.showMessageDialog(null, "Welcome, " + UserL, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
 
+                    if (UserL.equalsIgnoreCase("admin") && PassL.equals("admin")) { 
+                        new SelectionAdmin().setVisible(true);
+                        setVisible(false);
+                    } else if (UserL.equalsIgnoreCase(username.get(i))) { 
+                        new SelectionCashier().setVisible(true);
+                        setVisible(false);
+                    }
+                }
+            }
+
+            if (!authenticated) {
+                JOptionPane.showMessageDialog(null, "Invalid username or password!", "Invalid Login", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }private void loadUsersFromFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader("users.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    username.add(parts[0]);
+                    password.add(parts[1]);
+                }
+            }
+            size = username.size(); // Update size
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+ 
+}
