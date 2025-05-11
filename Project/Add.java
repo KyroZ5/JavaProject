@@ -28,7 +28,7 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
 	this.loginInstance = loginInstance; // Store the reference
 	
 	setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
-	setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
+	setExtendedState(MAXIMIZED_BOTH); // Maximize window
 	setLocationRelativeTo(null);
 	   setLayout(null);
 	   setTitle("Add Account");
@@ -72,26 +72,45 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
 	}
 
 	@Override
-    public void actionPerformed(ActionEvent ev) {
-        if (ev.getSource() == btnregLogin) {
-            String user = txtregUsername.getText().trim();
-            String pass = new String(txtregPassword.getPassword()).trim();
+	public void actionPerformed(ActionEvent ev) {
+	    if (ev.getSource() == btnregLogin) {
+	        String user = txtregUsername.getText().trim();
+	        String pass = new String(txtregPassword.getPassword()).trim();
 
-            if (!user.isEmpty() && !pass.isEmpty()) {
-                loginInstance.username.add(user);
-                loginInstance.password.add(pass);
-                saveUserToFile(user, pass); // Save user credentials to file
+	        if (!user.isEmpty() && !pass.isEmpty()) {
+	            if (isUsernameTaken(user)) {
+	                JOptionPane.showMessageDialog(null, "Username already exists! Please choose a different one.", "Error", JOptionPane.ERROR_MESSAGE);
+	            } else {
+	                loginInstance.username.add(user);
+	                loginInstance.password.add(pass);
+	                saveUserToFile(user, pass); // Save user credentials to file
+	                JOptionPane.showMessageDialog(null, "User registered successfully!", "Registration", JOptionPane.INFORMATION_MESSAGE);
+	            }
+	        } else {
+	            JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    } else if (ev.getSource() == btnLogout) {
+	        setVisible(false);
+	        new Login().setVisible(true);
+	    }
+	}
 
-                JOptionPane.showMessageDialog(null, "User registered successfully!", "Registration", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else if (ev.getSource() == btnLogout) {
-        	setVisible(false);
-            new Login().setVisible(true);
-        }
-    }
+	private boolean isUsernameTaken(String username) {
+	    try (BufferedReader reader = new BufferedReader(new FileReader(FILE_NAME))) {
+	        String line;
+	        while ((line = reader.readLine()) != null) {
+	            String[] parts = line.split(",");
+	            if (parts.length > 0 && parts[0].equals(username)) {
+	                return true; // Username found
+	            }
+	        }
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	    return false; // Username not found
+	}
 
+	
     private void saveUserToFile(String user, String pass) {
         try (FileWriter fw = new FileWriter(FILE_NAME, true);
              BufferedWriter bw = new BufferedWriter(fw);
