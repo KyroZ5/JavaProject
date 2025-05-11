@@ -69,6 +69,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
 		btnAdd.setBounds(40,40,80,80);
 		//btnAdd.setText("");
 		btnCashier.setBounds(140,40,80,80);
+		
 		//btnCashier.setText("");
 		btnAdmin.setBounds(240,40,80,80);
 		//btnAdmin.setText("");
@@ -113,7 +114,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
    			Cashier login = new Cashier();
    			login.setVisible(true);
    			JOptionPane.showMessageDialog(null, "Welcome "+ "Cashier","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   	        this.dispose();
+   			setVisible(false);
    		}else if(ev.getSource()==btnAdmin) {
    			//JOptionPane.showMessageDialog(null, "Welcome ","Login",JOptionPane.INFORMATION_MESSAGE);
    		}else if(ev.getSource()==btnInventory) {
@@ -122,7 +123,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
    			Login log = new Login();
    			log.setVisible(true);
    			//JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
-   			this.dispose();
+   			setVisible(false);
    		}
    	}
    }
