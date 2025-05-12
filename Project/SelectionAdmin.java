@@ -8,14 +8,12 @@ import javax.swing.event.*;
 
 public class SelectionAdmin extends JFrame implements ActionListener{
 	
-	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
 	JPanel newLogin = new JPanel();
-	ImageIcon ALogo = new ImageIcon("./img/person-add.png");
+	ImageIcon ALogo = new ImageIcon("./img/logout.png");
 	Image imgA = ALogo.getImage();
 	Image newALogo = imgA.getScaledInstance(80,80,java.awt.Image.SCALE_SMOOTH);
 	ImageIcon aLogo = new ImageIcon(newALogo);
-	JButton btnAdd = new JButton(aLogo);
+	JButton btnLogout = new JButton(aLogo);
 	
 	ImageIcon BLogo = new ImageIcon("./img/cashier.jpg");
 	Image imgB = BLogo.getImage();
@@ -35,101 +33,60 @@ public class SelectionAdmin extends JFrame implements ActionListener{
 	ImageIcon dLogo = new ImageIcon(newDLogo);
 	JButton btnInventory = new JButton(dLogo);
 	
-	JLabel lblAdd = new JLabel("Create");
-	JLabel lblAdd2 = new JLabel("Account");
+	JLabel lblLogout = new JLabel("Logout");
 	JLabel lblCashier = new JLabel("Cashier");
 	JLabel lblAdmin = new JLabel("Admin");
 	JLabel lblInven = new JLabel("Inventory");
-	
-	JButton btnLogout = new JButton("Logout");
-	
-	//Image Icon
-    ImageIcon logo = new ImageIcon("./img/pos1.jpeg");
-    
-	//Backgound Image
-    JPanel brand = new JPanel();
-    ImageIcon BLogo1 = new ImageIcon("./img/pos3.jpeg");
-    Image img = BLogo1.getImage();
-    Image newLogo = img.getScaledInstance(800,200,java.awt.Image.SCALE_SMOOTH);
-    ImageIcon Logo = new ImageIcon(newLogo);
-    JLabel bLogo1 = new JLabel();
-    
+	Color myColor = new Color(193, 234, 242); 
+        Font font = new Font("Montserrat", Font.BOLD, 15);
+        ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
     public SelectionAdmin() {
-    	setSize(screenSize.width, screenSize.height);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);	
-    	setLocationRelativeTo(null);
-    	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	setTitle("Pentagram POS (Point-of-Sale) System");
-    	setIconImage(logo.getImage());
-    	getContentPane().setBackground(Color.WHITE);
-    	
-    	setLayout(null); // Keep manual layout for precise positioning
-    	
-    	// Background Image Panel Setup
-        brand.setBounds(getWidth() / 2 - 400, 100, 800, 200); // Center it properly
-        bLogo1.setIcon(Logo);
-        brand.add(bLogo1);
-        brand.setBackground(Color.WHITE);
-        add(brand);
-    	
-        // Login Panel Setup
-    	newLogin.setLayout(null);
-        newLogin.setBounds(getWidth() / 2 - 225, 400, 460, 200); // Center login panel
-        newLogin.setBorder(BorderFactory.createTitledBorder(""));
-        newLogin.setBackground(Color.CYAN);
+    	setSize(470, 235);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+        setTitle("Pentagram");
+        setIconImage(logo.getImage());
         add(newLogin);
 
-        newLogin.add(btnAdd);
         newLogin.add(btnCashier);
         newLogin.add(btnAdmin);
         newLogin.add(btnInventory);
         newLogin.add(btnLogout);
-        newLogin.add(lblAdd);
-        newLogin.add(lblAdd2);
+        newLogin.add(lblLogout);
         newLogin.add(lblCashier);
         newLogin.add(lblAdmin);
         newLogin.add(lblInven);
         newLogin.isOpaque();
-   
-	
-		btnAdd.setBounds(40,40,80,80);
-		btnCashier.setBounds(140,40,80,80);
-		btnAdmin.setBounds(240,40,80,80);
-		btnInventory.setBounds(340,40,80,80);
-		btnLogout.setBounds(340,160,100,30);
+        newLogin.setBackground(myColor);     
+        newLogin.setBounds(0,0,460,200);
+	newLogin.setLayout(null);
+	newLogin.setBorder(BorderFactory.createTitledBorder(""));
+	btnInventory.setBounds(40,40,80,80);
+	btnCashier.setBounds(140,40,80,80);
+	btnAdmin.setBounds(240,40,80,80);
+	lblInven.setBounds(45,95,120,80);
+	lblInven.setEnabled(true); 
+        lblInven.setFont(font);
+	lblCashier.setBounds(157,95,120,80);
+        lblCashier.setFont(font);
+	lblAdmin.setBounds(260,95,120,80);
+	lblAdmin.setEnabled(true); 
+        lblAdmin.setFont(font);
+	btnLogout.setBounds(350,40,80,80);
+        lblLogout.setBounds(360,95,120,80);
+	lblLogout.setEnabled(true); 
+        lblLogout.setFont(font);
+	btnLogout.setEnabled(true); 
+	btnCashier.setEnabled(true); 
+	btnAdmin.setEnabled(true);
+	btnInventory.setEnabled(true);
+	btnLogout.addActionListener(this); 
+	btnCashier.addActionListener(this); 
+	btnAdmin.addActionListener(this);
+	btnInventory.addActionListener(this);
 		
-		lblAdd.setBounds(60,95,120,80);
-		lblAdd.setEnabled(true); 
-		lblAdd2.setBounds(55,110,120,80);
-		lblAdd2.setEnabled(true); 
-		lblCashier.setBounds(157,95,120,80);
-		lblAdmin.setBounds(260,95,120,80);
-		lblAdmin.setEnabled(true); 
-		lblInven.setBounds(350,95,120,80);
-		lblInven.setEnabled(true); 
-		
-		
-		btnAdd.setEnabled(true); 
-		btnCashier.setEnabled(true); 
-		btnAdmin.setEnabled(true);
-		btnInventory.setEnabled(true);
-	
-		btnAdd.addActionListener(this); 
-		btnCashier.addActionListener(this); 
-		btnAdmin.addActionListener(this);
-		btnInventory.addActionListener(this);
-		
-		btnLogout.addActionListener(this);
-		
-		  // Resize Listener for Dynamic Adjustments
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                brand.setBounds(getWidth() / 2 - 400, 100, 800, 200);
-                newLogin.setBounds(getWidth() / 2 - 225, 400, 460, 200);
-                newLogin.revalidate();
-            }
-        });
 		
     }
 
@@ -145,31 +102,26 @@ public class SelectionAdmin extends JFrame implements ActionListener{
     }
     @Override
    	public void actionPerformed(ActionEvent ev) {
-   		if(ev.getSource()==btnAdd) {
-   		 Login loginInstance = new Login(); // Ensure a Login instance exists
-         new Add(loginInstance).setVisible(true); // Pass Login reference
-   			//JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
-   		}else if(ev.getSource()==btnCashier) {
+   		if(ev.getSource()==btnCashier) {
    			Cashier login = new Cashier();
    	        login.setVisible(true);
-   			//JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
+   			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
+   			this.dispose();
    		}else if(ev.getSource()==btnAdmin) {
    			Admin login = new Admin();
    	        login.setVisible(true);
-   			//JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
+   			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
+   			this.dispose();
    		}else if(ev.getSource()==btnInventory) {
    			Inventory login = new Inventory();
    	        login.setVisible(true);
-   			//JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
+   			JOptionPane.showMessageDialog(null, "Welcome "+ "Admin","Login Successful",JOptionPane.INFORMATION_MESSAGE);
+   			this.dispose();
    		}else if(ev.getSource()==btnLogout) {
    			Login log = new Login();
    			log.setVisible(true);
    			//JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
-   			setVisible(false);
+   			this.dispose();
    		}
    	}
   }
