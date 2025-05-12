@@ -38,8 +38,8 @@ public class SelectionCashier extends JFrame implements ActionListener{
 	JLabel lblAdmin = new JLabel("Admin");
 	JLabel lblInven = new JLabel("Inventory");
 	Color myColor = new Color(193, 234, 242); 
-        Font font = new Font("Montserrat", Font.BOLD, 15);
-        ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
+    Font font = new Font("Montserrat", Font.BOLD, 15);
+     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
 
     public SelectionCashier() {
     	setSize(470, 235);
@@ -69,7 +69,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
 	btnAdmin.setBounds(240,40,80,80);
 	lblInven.setBounds(45,95,120,80);
 	lblInven.setEnabled(false); 
-        lblInven.setFont(font);
+    lblInven.setFont(font);
 	lblCashier.setBounds(157,95,120,80);
         lblCashier.setFont(font);
 	lblAdmin.setBounds(260,95,120,80);
