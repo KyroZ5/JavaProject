@@ -146,7 +146,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
    		}else if(ev.getSource()==btnCashier) {
    			Cashier login = new Cashier();
    			login.setVisible(true);
-   			JOptionPane.showMessageDialog(null, "Welcome "+ "Cashier","Login Successful",JOptionPane.INFORMATION_MESSAGE);
+   			//JOptionPane.showMessageDialog(null, "Welcome "+ "Cashier","Login Successful",JOptionPane.INFORMATION_MESSAGE);
    			setVisible(false);
    		}else if(ev.getSource()==btnAdmin) {
    			//JOptionPane.showMessageDialog(null, "Welcome ","Login",JOptionPane.INFORMATION_MESSAGE);
