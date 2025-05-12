@@ -31,10 +31,10 @@ public class Inventory extends JFrame implements ActionListener {
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
 
     // Color
- 	Color myColor = new Color(193, 234, 242); 
- 	
+    Color myColor = new Color(193, 234, 242);
+
     public Inventory() {
-        // **Frame Settings**
+        // Frame Settings
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,7 +43,7 @@ public class Inventory extends JFrame implements ActionListener {
         setIconImage(logo.getImage());
         //getContentPane().setBackground(myColor); // Background fix
 
-        // **Inventory Table Setup (Non-Editable)**
+        // Inventory Table Setup (Non-Editable)
         tableModel = new DefaultTableModel(new String[]{"Barcode", "Item Name", "Stock", "Price (₱)"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -53,7 +53,7 @@ public class Inventory extends JFrame implements ActionListener {
         inventoryTable = new JTable(tableModel);
         inventoryTable.setRowHeight(25);
         
-        // **Ensure text is centered in all columns**
+        // Ensure text is centered in all columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < inventoryTable.getColumnCount(); i++) {
@@ -66,7 +66,8 @@ public class Inventory extends JFrame implements ActionListener {
         inventoryPanel.setBorder(BorderFactory.createTitledBorder("Inventory List"));
         inventoryPanel.add(scrollPane, BorderLayout.CENTER);
         inventoryPanel.setBackground(myColor);
-        // **Control Panel Setup**
+        
+        // Control Panel Setup
         controlPanel.setLayout(new FlowLayout());
         controlPanel.setBorder(BorderFactory.createTitledBorder("Admin Controls"));
         controlPanel.setBackground(myColor);
@@ -83,23 +84,22 @@ public class Inventory extends JFrame implements ActionListener {
         btnRefresh.addActionListener(this);
         btnBack.addActionListener(this);
 
-        // **Load Preloaded Inventory Items**
+        // Load Inventory Items
         loadInventory();
 
         add(inventoryPanel, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
     }
 
-    // **Loads inventory items from file**
+    // Loads inventory items from file
     private void loadInventory() {
         tableModel.setRowCount(0); // Clear table before reloading
-
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 4) { // Ensure correct format: Barcode, Item, Stock, Price
-                    tableModel.addRow(new Object[]{parts[0], parts[1], parts[2], "₱" + parts[3]});
+                if (parts.length == 4) { // Expected format: Barcode, Item, Stock, Price
+                    tableModel.addRow(new Object[]{parts[0].trim(), parts[1].trim(), parts[2].trim(), "₱" + parts[3].trim()});
                 }
             }
         } catch (IOException e) {
@@ -107,18 +107,25 @@ public class Inventory extends JFrame implements ActionListener {
         }
     }
 
-    // **Saves inventory list back to file**
+    // Saves inventory list back to file
     private void saveInventory() {
         try (PrintWriter out = new PrintWriter(new FileWriter(FILE_NAME))) {
             for (int i = 0; i < tableModel.getRowCount(); i++) {
-                out.println(tableModel.getValueAt(i, 0) + "," + tableModel.getValueAt(i, 1) + "," + tableModel.getValueAt(i, 2) + "," + tableModel.getValueAt(i, 3).toString().replace("₱", ""));
+                // Remove the peso sign before saving
+                String price = tableModel.getValueAt(i, 3).toString().replace("₱", "");
+                out.println(
+                        tableModel.getValueAt(i, 0) + "," +
+                        tableModel.getValueAt(i, 1) + "," +
+                        tableModel.getValueAt(i, 2) + "," +
+                        price
+                );
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // **Handles Admin Functions**
+    // Handles Admin Functions
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnAdd) {
@@ -128,7 +135,7 @@ public class Inventory extends JFrame implements ActionListener {
             String price = JOptionPane.showInputDialog("Enter price:");
 
             if (barcode != null && itemName != null && stock != null && price != null) {
-                tableModel.addRow(new Object[]{barcode, itemName, stock, "₱" + price});
+                tableModel.addRow(new Object[]{barcode.trim(), itemName.trim(), stock.trim(), "₱" + price.trim()});
                 saveInventory();
                 JOptionPane.showMessageDialog(this, "Item added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -148,11 +155,20 @@ public class Inventory extends JFrame implements ActionListener {
                     String newPrice = JOptionPane.showInputDialog("Edit price:", currentPrice);
 
                     if (newItem != null && newStock != null && newPrice != null) {
-                        tableModel.setValueAt(newItem, selectedRow, 1);
-                        tableModel.setValueAt(newStock, selectedRow, 2);
-                        tableModel.setValueAt("₱" + newPrice, selectedRow, 3);
-                        saveInventory();
-                        JOptionPane.showMessageDialog(this, "Item updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        try {
+                            int newStockVal = Integer.parseInt(newStock.trim());
+                            if (newStockVal < 0) {
+                                JOptionPane.showMessageDialog(this, "Stock cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE);
+                                return;
+                            }
+                            tableModel.setValueAt(newItem.trim(), selectedRow, 1);
+                            tableModel.setValueAt(newStockVal, selectedRow, 2);
+                            tableModel.setValueAt("₱" + newPrice.trim(), selectedRow, 3);
+                            saveInventory();
+                            JOptionPane.showMessageDialog(this, "Item updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                        } catch(NumberFormatException ex) {
+                            JOptionPane.showMessageDialog(this, "Invalid stock value.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Incorrect password! Edit failed.", "Error", JOptionPane.ERROR_MESSAGE);
