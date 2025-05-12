@@ -63,6 +63,8 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
      JPanel logoutPanel;
      JButton btnLogout = new JButton("Logout");
 
+    // Color
+  	 Color myColor = new Color(193, 234, 242); 
     // ---------------------------
     // Inventory Data
     // ---------------------------
@@ -90,7 +92,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setIconImage(new ImageIcon("./img/logo-icon-dark-transparent.png").getImage());
         setLayout(new BorderLayout(5, 5));
-
+        getContentPane().setBackground(myColor);
         // ---------------------------
         // Left Panel: Transaction Table + Increase/Decrease buttons
         // ---------------------------
@@ -115,22 +117,26 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         }
         JScrollPane transScroll = new JScrollPane(transactionTable);
         transactionPanel.add(transScroll, BorderLayout.CENTER);
-
+        transactionPanel.setBackground(myColor);
         // Transaction Control Panel: Increase/Decrease Quantity buttons
         transactionControlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         transactionControlPanel.add(btnIncrease);
         transactionControlPanel.add(btnDecrease);
+        transactionControlPanel.setBackground(myColor);
         btnIncrease.addActionListener(this);
         btnDecrease.addActionListener(this);
 
         leftPanel.add(transactionPanel, BorderLayout.CENTER);
+        leftPanel.setBackground(myColor);
         leftPanel.add(transactionControlPanel, BorderLayout.SOUTH);
+        
 
         // ---------------------------
         // Right Panel: Receipt (top) and Payment Panel (bottom)
         // ---------------------------
         rightPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-
+        rightPanel.setBackground(myColor);
+        
         // Receipt Panel
         receiptPanel = new JPanel(new BorderLayout());
         receiptPanel.setBorder(BorderFactory.createTitledBorder("Receipt"));
@@ -138,10 +144,12 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         receiptArea.setEditable(false);
         receiptPanel.add(receiptScroll, BorderLayout.CENTER);
         receiptPanel.add(btnSaveReceipt, BorderLayout.SOUTH);
+        receiptPanel.setBackground(myColor);
         btnSaveReceipt.addActionListener(this);
-
+       
         // Payment Panel: Combined Barcode Input, Cash Payment, Number Pad, Logout, and Reset
         paymentPanel = new JPanel();
+        paymentPanel.setBackground(myColor);
         paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
         paymentPanel.setBorder(BorderFactory.createTitledBorder("Payment"));
 
@@ -189,6 +197,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         // Logout sub-panel; add some vertical spacer to push logout button lower.
         logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         logoutPanel.add(Box.createVerticalStrut(20)); // vertical space
+        logoutPanel.setBackground(myColor);
         logoutPanel.add(btnLogout);
         btnLogout.addActionListener(this);
 
