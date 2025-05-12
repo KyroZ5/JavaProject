@@ -44,7 +44,8 @@ public class Login extends JFrame implements ActionListener {
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	setTitle("Pentagram POS (Point-of-Sale) System");
     	setIconImage(logo.getImage());
-    	getContentPane().setBackground(Color.WHITE);
+    	Color myColor = new Color(193, 234, 242); 
+    	getContentPane().setBackground(myColor);
     	
     	setLayout(null); // Keep manual layout for precise positioning
     	
@@ -52,13 +53,13 @@ public class Login extends JFrame implements ActionListener {
         brand.setBounds(getWidth() / 2 - 400, 100, 800, 200); // Center it properly
         bLogo.setIcon(Logo);
         brand.add(bLogo);
-        brand.setBackground(Color.WHITE);
+        brand.setBackground(myColor);
         add(brand);
 
         // Login Panel Setup
         p1.setBounds(getWidth() / 2 - 200, 350, 400, 300); // Center login panel
         p1.setBorder(BorderFactory.createTitledBorder(""));
-        p1.setBackground(Color.WHITE);
+        p1.setBackground(myColor);
         add(p1);
 
         // Position Components
