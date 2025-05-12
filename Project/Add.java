@@ -9,67 +9,84 @@ import javax.swing.event.*;
 
 public class Add extends JFrame implements ActionListener, ItemListener, ChangeListener {
 
-	  Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	  private Login loginInstance;
 	  
-	  JPanel p1 = new JPanel(); // Keep manual layout for precise positioning
-	  //JPanel p2 = new JPanel();
-	  Color myColor = new Color(193, 234, 242); 
-	  JLabel lblregUsername = new JLabel("Username: ");
-	  JLabel lblregPassword = new JLabel("Password: ");
-	  JTextField txtregUsername = new JTextField();
-	  JPasswordField txtregPassword = new JPasswordField();
-	  JButton btnregLogin = new JButton("Register");
-	  JButton btnregCancel = new JButton("Cancel");
-	  Font font = new Font("Montserrat", Font.BOLD, 15);
+	JPanel p1 = new JPanel(); // Keep manual layout for precise positioning
+	JPanel p2 = new JPanel();
+	Color myColor = new Color(193, 234, 242); 
+	JLabel lblregUsername = new JLabel("Username: ");
+	JLabel lblregPassword = new JLabel("Password: ");
+	JTextField txtregUsername = new JTextField();
+	JPasswordField txtregPassword = new JPasswordField();
+	JButton btnregLogin = new JButton("Register");
+	JButton btnregCancel = new JButton("Cancel");
+	Font font = new Font("Montserrat", Font.BOLD, 15);
+        Font font2 = new Font("Montserrat", Font.BOLD, 20);
+        ImageIcon BLogo = new ImageIcon("./img/logo-dark-transparent.png");
+        Image img = BLogo.getImage();
+        Image newLogo = img.getScaledInstance(350,80,java.awt.Image.SCALE_SMOOTH);
+        ImageIcon Logo = new ImageIcon(newLogo);
+        JLabel bLogo = new JLabel();
+        JLabel newRegis = new JLabel("Register New Account");
+        ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
 	  
 	  private static final String FILE_NAME = "users.txt"; // File to store users
-	  
-	   //Image Icon
-	    ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
-	 
+	
 	    
 	public Add(Login loginInstance) {
-		setSize(450,400);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Login Form");
-        setLayout(null);
-        setResizable(false);
-        setIconImage(logo.getImage());
-    	getContentPane().setBackground(Color.WHITE);
+	    setSize(450,400);
+            setLocationRelativeTo(null);
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setTitle("Pentagram");
+            setLayout(null);
+            setResizable(false);
+            setIconImage(logo.getImage());
+            getContentPane().setBackground(Color.WHITE);
     	
 
-    	add(p1);
-        // Login Panel Setup
-        p1.add(lblregUsername);
-	    p1.add(lblregPassword);
-	    p1.add(txtregUsername);
-	    p1.add(txtregPassword);
-	    p1.add(btnregLogin);
-	    p1.add(btnregCancel);   
+            add(p1);
+            add(p2);
+        
+            p2.setBounds(0, 0, 450, 130);
+            p2.setLayout(null);
+            p2.setBorder(BorderFactory.createTitledBorder(""));
+            p2.setBackground(myColor);
+            p2.add(bLogo);
+            p2.setBorder(null);
+            bLogo.setBounds(40,30,375,105);
+            bLogo.setIcon(Logo);
+        
+            p1.add(lblregUsername);
+            p1.add(lblregPassword);
+            p1.add(txtregUsername);
+            p1.add(txtregPassword);
+            p1.add(btnregLogin);
+            p1.add(btnregCancel);   
+            p1.add(newRegis);
 	   
-        p1.setBounds(0, 0, 450, 370);
-        p1.setLayout(null);
-        p1.setBorder(BorderFactory.createTitledBorder(""));
-        p1.setBackground(myColor);
-        p1.setBorder(null);
+            p1.setBounds(0, 130, 450, 250);
+            p1.setLayout(null);
+            p1.setBorder(BorderFactory.createTitledBorder(""));
+            p1.setBackground(myColor);
+            p1.setBorder(null);
         
         // Position Components
-        lblregUsername.setBounds(50, 50, 100, 30);
-        lblregUsername.setFont(font);
-        txtregUsername.setBounds(150, 50, 150, 30);
-        lblregPassword.setBounds(50, 100, 100, 30);
-        lblregPassword.setFont(font);
-        txtregPassword.setBounds(150, 100, 150, 30);
+            newRegis.setBounds(120, 0, 250, 30);
+            newRegis.setFont(font2);
+            lblregUsername.setBounds(80, 50, 100, 30);
+            lblregUsername.setFont(font);
+            txtregUsername.setBounds(180, 50, 150, 30);
+            lblregPassword.setBounds(80, 100, 100, 30);
+            lblregPassword.setFont(font);
+            txtregPassword.setBounds(180, 100, 150, 30);
      
-        btnregCancel.setBounds(80, 170, 100, 30);
-        btnregCancel.setFont(font);
-        btnregCancel.addActionListener(this);
+            btnregCancel.setBounds(80, 170, 100, 30);
+            btnregCancel.setFont(font);
+            btnregCancel.addActionListener(this);
    	   
-        btnregLogin.setBounds(280, 170, 100, 30);
-        btnregLogin.setFont(font);
-        btnregLogin.addActionListener(this);	
+            btnregLogin.setBounds(240, 170, 100, 30);
+            btnregLogin.setFont(font);
+            btnregLogin.addActionListener(this);	
 
    	    this.loginInstance = loginInstance; // Store the reference
 	}
@@ -113,6 +130,7 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
 	        }
 	    } else if (ev.getSource() == btnregCancel) {
              setVisible(false);
+             new SelectionAdmin().setVisible(true);
 	    }
 	}
 
