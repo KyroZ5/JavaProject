@@ -25,7 +25,8 @@ public class Admin extends JFrame implements ActionListener {
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
 
     // Color
- 	Color myColor = new Color(193, 234, 242); 
+    Color myColor = new Color(193, 234, 242);
+
     public Admin() {
         setSize(500, 600);
         setLocationRelativeTo(null);
@@ -34,8 +35,8 @@ public class Admin extends JFrame implements ActionListener {
         setLayout(null);
         setResizable(false);
         setIconImage(logo.getImage());
-        getContentPane().setBackground(myColor); // Background fix
-        
+        getContentPane().setBackground(myColor);
+
         // Buttons
         add(btnAdd);
         add(btnEdit);
@@ -48,7 +49,7 @@ public class Admin extends JFrame implements ActionListener {
         btnEdit.setBounds(100, 10, 80, 30);
         btnDel.setBounds(190, 10, 80, 30);
         btnRefresh.setBounds(280, 10, 80, 30);
-        btnLogout.setBounds(390, 10, 80, 30); // **Positioned at the end of the row**
+        btnLogout.setBounds(390, 10, 80, 30);
 
         btnAdd.addActionListener(this);
         btnEdit.addActionListener(this);
@@ -56,12 +57,11 @@ public class Admin extends JFrame implements ActionListener {
         btnRefresh.addActionListener(this);
         btnLogout.addActionListener(this);
 
-    
         // JTable Setup (Updated with Name column)
-        tableModel = new DefaultTableModel(new String[]{"Name", "Username", "Password"} , 0) {
+        tableModel = new DefaultTableModel(new String[]{"Name", "Username", "Password"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Disable manual editing
+                return false;
             }
         };
 
@@ -88,9 +88,9 @@ public class Admin extends JFrame implements ActionListener {
         @Override
         protected void setValue(Object value) {
             if (!showPasswords && value != null) {
-                setText("****"); // Hide password
+                setText("****");
             } else {
-                setText(value.toString()); // Show actual password when toggled
+                setText(value.toString());
             }
         }
     }
@@ -98,22 +98,19 @@ public class Admin extends JFrame implements ActionListener {
     PasswordRenderer passwordRenderer = new PasswordRenderer();
 
     private void loadUsers() {
-        tableModel.setRowCount(0); // Clear table
+        tableModel.setRowCount(0);
 
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 3) { // Ensure correct format (Name, Username, Password)
+                if (parts.length == 3) {
                     tableModel.addRow(new String[]{parts[0], parts[1], parts[2]});
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Debugging: Check if data is being loaded
-        System.out.println("Loaded users count: " + tableModel.getRowCount());
     }
 
     private void saveUsersToFile() {
@@ -130,22 +127,21 @@ public class Admin extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ev) {
         if (ev.getSource() == btnAdd) {
             Login loginInstance = new Login();
-            new Add(loginInstance).setVisible(true); // Open Add User screen
+            new Add(loginInstance).setVisible(true);
         } else if (ev.getSource() == btnEdit) {
             int selectedRow = userTable.getSelectedRow();
-            if (selectedRow != -1) { 
+            if (selectedRow != -1) {
                 String currentName = tableModel.getValueAt(selectedRow, 0).toString();
                 String currentUsername = tableModel.getValueAt(selectedRow, 1).toString();
                 String currentPassword = tableModel.getValueAt(selectedRow, 2).toString();
-                
+
                 // Confirm password before allowing edits
                 String enteredPassword = JOptionPane.showInputDialog("Enter current password to confirm:");
                 if (enteredPassword != null && enteredPassword.equals(currentPassword)) {
-                    
                     String newName = JOptionPane.showInputDialog("Enter new name:", currentName);
                     String newUsername = JOptionPane.showInputDialog("Enter new username:", currentUsername);
                     String newPassword = JOptionPane.showInputDialog("Enter new password:", currentPassword);
-                    
+
                     if (newName != null && newUsername != null && newPassword != null) {
                         tableModel.setValueAt(newName, selectedRow, 0);
                         tableModel.setValueAt(newUsername, selectedRow, 1);
@@ -162,9 +158,16 @@ public class Admin extends JFrame implements ActionListener {
         } else if (ev.getSource() == btnDel) {
             int selectedRow = userTable.getSelectedRow();
             if (selectedRow != -1) {
-                tableModel.removeRow(selectedRow);
-                saveUsersToFile();
-                JOptionPane.showMessageDialog(this, "User deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            	String enteredPassword = JOptionPane.showInputDialog("Enter admin password to confirm deletion:");
+                if (enteredPassword != null && enteredPassword.equals("admin")) {
+                    tableModel.removeRow(selectedRow);
+                    saveUsersToFile();
+                    JOptionPane.showMessageDialog(this, "User deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Incorrect password! Deletion failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Select a user to delete.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else if (ev.getSource() == btnRefresh) {
             loadUsers();

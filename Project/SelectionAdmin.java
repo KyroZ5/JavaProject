@@ -119,9 +119,9 @@ public class SelectionAdmin extends JFrame implements ActionListener{
    	        setVisible(false);
    			
    		}else if(ev.getSource()==btnLogout) {
-   			Login log = new Login();
-   			log.setVisible(true);
-   			setVisible(false);
+   		  Login log = new Login();
+          log.setVisible(true);
+   			this.dispose();
    		}
    	}
   }
