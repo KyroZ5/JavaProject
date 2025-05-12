@@ -16,7 +16,7 @@ public class Login extends JFrame implements ActionListener {
     
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
  
-    JPanel p1 = new JPanel();
+    JPanel p1 = new JPanel(null); // Keep manual layout for precise positioning
 
     JLabel lblUsername = new JLabel("Username: ");
     JLabel lblPassword = new JLabel("Password: ");
@@ -24,7 +24,6 @@ public class Login extends JFrame implements ActionListener {
     JPasswordField txtPassword = new JPasswordField(15);
 
     JButton btnLogin = new JButton("Login");
-   //p1.add(btnLogin, BorderLayout.CENTER);
     JButton btnCancel = new JButton("Cancel");
 
     //Image Icon
@@ -40,33 +39,29 @@ public class Login extends JFrame implements ActionListener {
     
     public Login() {
     	setSize(screenSize.width, screenSize.height);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);	
     	setLocationRelativeTo(null);
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     	setTitle("Pentagram POS (Point-of-Sale) System");
-    	setLayout(null);
     	setIconImage(logo.getImage());
-    	//getContentPane().setBackground(Color.CYAN);
-    	 
-    	//Backgound Image
-    	brand.setBounds(550,100,800,200);
-        brand.add(bLogo);
+    	getContentPane().setBackground(Color.WHITE);
+    	
+    	setLayout(null); // Keep manual layout for precise positioning
+    	
+    	// Background Image Panel Setup
+        brand.setBounds(getWidth() / 2 - 400, 100, 800, 200); // Center it properly
         bLogo.setIcon(Logo);
-        bLogo.setBounds(550,100,800,200);
+        brand.add(bLogo);
+        brand.setBackground(Color.WHITE);
         add(brand);
-    	
-    	
-        add(p1);
-        p1.add(lblUsername);
-        p1.add(lblPassword);
-        p1.add(txtUsername);
-        p1.add(txtPassword);
-        p1.add(btnLogin);
-        p1.add(btnCancel);
-        p1.setBounds(750, 350, 400, 300);
-        p1.setLayout(new BorderLayout());
-        p1.setBorder(BorderFactory.createTitledBorder(""));
 
+        // Login Panel Setup
+        p1.setBounds(getWidth() / 2 - 200, 350, 400, 300); // Center login panel
+        p1.setBorder(BorderFactory.createTitledBorder(""));
+        p1.setBackground(Color.WHITE);
+        add(p1);
+
+        // Position Components
         lblUsername.setBounds(50, 50, 100, 30);
         txtUsername.setBounds(150, 50, 150, 30);
         lblPassword.setBounds(50, 100, 100, 30);
@@ -74,8 +69,26 @@ public class Login extends JFrame implements ActionListener {
         btnLogin.setBounds(250, 250, 100, 30);
         btnCancel.setBounds(50, 250, 100, 30);
 
+        // Add Components to Panel
+        p1.add(lblUsername);
+        p1.add(txtUsername);
+        p1.add(lblPassword);
+        p1.add(txtPassword);
+        p1.add(btnLogin);
+        p1.add(btnCancel);
+
         btnLogin.addActionListener(this);
         btnCancel.addActionListener(this);
+        
+        // Resize Listener for Dynamic Adjustments
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                brand.setBounds(getWidth() / 2 - 400, 100, 800, 200);
+                p1.setBounds(getWidth() / 2 - 200, 350, 400, 300);
+                p1.revalidate();
+            }
+        });
 
         // Sample users
         employeeNumber.add(101);
