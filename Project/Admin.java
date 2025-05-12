@@ -9,49 +9,57 @@ public class Admin extends JFrame implements ActionListener, ItemListener, Chang
 	
 	Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	
+	JButton btnAdd = new JButton("Add");
+	JButton btnEdit = new JButton("Edit");
+	JButton btnDel = new JButton("Delete");
+	
 	// Panel 1
-	JPanel P1 = new JPanel();
-	
-	// Panel 2
-	JPanel P2 = new JPanel();
-	
-	// Panel 3
-	JPanel P3 = new JPanel();
-	
-	// Panel 4
-	JPanel P4 = new JPanel();
-	
-	public Admin() {
-	   setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
-	   setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
-	   setLocationRelativeTo(null);
-	   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	   setLayout(null);
-	   setTitle("Admin");
-	   
-	   add(P1);
-	   add(P2);
-	   add(P3);
-	   add(P4);
-	   
-	   // Panel 1
-	   P1.setLayout(null);
-	   P1.setBorder(BorderFactory.createTitledBorder("Panel 1"));
-	   P1.setBounds(10, 10, 1000, 500);
-	   // Panel 2
-	   P2.setLayout(null);
-	   P2.setBorder(BorderFactory.createTitledBorder("Panel 2"));
-	   P2.setBounds(1050, 10, 500, 500);
-	   // Panel 3
-	   P3.setLayout(null);
-	   P3.setBorder(BorderFactory.createTitledBorder("Panel 3"));
-	   P3.setBounds(10, 525, 1000, 300);
-	   // Panel 4
-	   P4.setLayout(null);
-	   P4.setBorder(BorderFactory.createTitledBorder("Panel 4"));
-	   P4.setBounds(1050, 525, 500, 300);
-	   
+	JPanel p1 = new JPanel();
 
+
+	Color myColor = new Color(193, 234, 242); 
+	 ImageIcon BLogo = new ImageIcon("./img/logo-dark-transparent.png");
+	 Image img = BLogo.getImage();
+	 Image newLogo = img.getScaledInstance(350,80,java.awt.Image.SCALE_SMOOTH);
+	 ImageIcon Logo = new ImageIcon(newLogo);
+	 JLabel bLogo = new JLabel();
+	 ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
+	 Font font = new Font("Montserrat", Font.BOLD, 15);
+
+    public Admin() {
+    	setSize(600,600);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Admin");
+        setLayout(null);
+        setResizable(false);
+        setIconImage(logo.getImage());
+        
+     
+
+	   add(p1);
+
+
+	   // Panel 1
+	   p1.setLayout(null);
+	   p1.setBorder(BorderFactory.createTitledBorder(""));
+	   p1.setBounds(10, 50, 565, 500);
+
+	   
+	   // Components
+	   add(btnAdd);  
+	   add(btnEdit);  
+	   add(btnDel);  
+	   
+	   btnAdd.setBounds(5, 5, 100, 20);
+	   btnAdd.addActionListener(this);
+  	   
+       btnEdit.setBounds(120, 5, 100, 20);
+       btnEdit.addActionListener(this);	
+       
+       
+       btnDel.setBounds(235, 5, 100, 20);
+       btnDel.addActionListener(this);	
 	}
 	
 	public static void main(String[] args) {
@@ -71,10 +79,17 @@ public class Admin extends JFrame implements ActionListener, ItemListener, Chang
 		
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+   	public void actionPerformed(ActionEvent ev) {
+   		if(ev.getSource()==btnAdd) {
+   		 Login loginInstance = new Login(); // Ensure a Login instance exists
+         new Add(loginInstance).setVisible(true); // Pass Login reference
+   			
+   			//setVisible(false);
+   		}else if(ev.getSource()==btnEdit) {
+   			
+   			setVisible(false);
+   		}
+   	}
+  }
 
-}
