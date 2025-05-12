@@ -24,16 +24,38 @@ public class Login extends JFrame implements ActionListener {
     JPasswordField txtPassword = new JPasswordField(15);
 
     JButton btnLogin = new JButton("Login");
+   //p1.add(btnLogin, BorderLayout.CENTER);
     JButton btnCancel = new JButton("Cancel");
 
+    //Image Icon
+    ImageIcon logo = new ImageIcon("./img/pos1.jpeg");
+    
+    //Backgound Image
+    JPanel brand = new JPanel();
+    ImageIcon BLogo = new ImageIcon("./img/pos3.jpeg");
+    Image img = BLogo.getImage();
+    Image newLogo = img.getScaledInstance(800,200,java.awt.Image.SCALE_SMOOTH);
+    ImageIcon Logo = new ImageIcon(newLogo);
+    JLabel bLogo = new JLabel();
+    
     public Login() {
     	setSize(screenSize.width, screenSize.height);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     	setLocationRelativeTo(null);
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    	setTitle("Login Form");
+    	setTitle("Pentagram POS (Point-of-Sale) System");
     	setLayout(null);
-
+    	setIconImage(logo.getImage());
+    	//getContentPane().setBackground(Color.CYAN);
+    	 
+    	//Backgound Image
+    	brand.setBounds(550,100,800,200);
+        brand.add(bLogo);
+        bLogo.setIcon(Logo);
+        bLogo.setBounds(550,100,800,200);
+        add(brand);
+    	
+    	
         add(p1);
         p1.add(lblUsername);
         p1.add(lblPassword);
@@ -42,7 +64,7 @@ public class Login extends JFrame implements ActionListener {
         p1.add(btnLogin);
         p1.add(btnCancel);
         p1.setBounds(750, 350, 400, 300);
-        p1.setLayout(null);
+        p1.setLayout(new BorderLayout());
         p1.setBorder(BorderFactory.createTitledBorder(""));
 
         lblUsername.setBounds(50, 50, 100, 30);
