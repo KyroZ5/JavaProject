@@ -7,9 +7,9 @@ import javax.swing.event.*;
 
 public class SelectionCashier extends JFrame implements ActionListener{
 	
-	
 	JPanel newLogin = new JPanel();
-	ImageIcon ALogo = new ImageIcon("./img/logout.png");
+	
+	ImageIcon ALogo = new ImageIcon("./img/next.png");
 	Image imgA = ALogo.getImage();
 	Image newALogo = imgA.getScaledInstance(80,80,java.awt.Image.SCALE_SMOOTH);
 	ImageIcon aLogo = new ImageIcon(newALogo);
@@ -39,8 +39,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
 	JLabel lblInven = new JLabel("Inventory");
 	Color myColor = new Color(193, 234, 242); 
     Font font = new Font("Montserrat", Font.BOLD, 15);
-     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
-
+    ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
     public SelectionCashier() {
     	setSize(470, 235);
         setResizable(false);
@@ -62,31 +61,32 @@ public class SelectionCashier extends JFrame implements ActionListener{
         newLogin.isOpaque();
         newLogin.setBackground(myColor);     
         newLogin.setBounds(0,0,460,200);
-	newLogin.setLayout(null);
-	newLogin.setBorder(BorderFactory.createTitledBorder(""));
-	btnInventory.setBounds(40,40,80,80);
-	btnCashier.setBounds(140,40,80,80);
-	btnAdmin.setBounds(240,40,80,80);
-	lblInven.setBounds(45,95,120,80);
-	lblInven.setEnabled(false); 
-    lblInven.setFont(font);
-	lblCashier.setBounds(157,95,120,80);
+	    newLogin.setLayout(null);
+	    newLogin.setBorder(BorderFactory.createTitledBorder(""));
+	    btnInventory.setBounds(40,40,80,80);
+	    btnCashier.setBounds(140,40,80,80);
+	    btnAdmin.setBounds(240,40,80,80);
+	    lblInven.setBounds(45,95,120,80);
+	    lblInven.setEnabled(false); 
+        lblInven.setFont(font);
+	    lblCashier.setBounds(157,95,120,80);
         lblCashier.setFont(font);
-	lblAdmin.setBounds(260,95,120,80);
-	lblAdmin.setEnabled(false); 
+	    lblAdmin.setBounds(260,95,120,80);
+	    lblAdmin.setEnabled(false); 
         lblAdmin.setFont(font);
-	btnLogout.setBounds(350,40,80,80);
+	    btnLogout.setBounds(350,40,80,80);
         lblLogout.setBounds(360,95,120,80);
-	lblLogout.setEnabled(false); 
+	    lblLogout.setEnabled(true); 
         lblLogout.setFont(font);
-	btnLogout.setEnabled(true); 
-	btnCashier.setEnabled(true); 
-	btnAdmin.setEnabled(false);
-	btnInventory.setEnabled(false);
-	btnLogout.addActionListener(this); 
-	btnCashier.addActionListener(this); 
-	btnAdmin.addActionListener(this);
-	btnInventory.addActionListener(this);
+	    btnLogout.setEnabled(true); 
+	    btnCashier.setEnabled(true); 
+	    btnAdmin.setEnabled(false);
+	    btnInventory.setEnabled(false);
+	    btnLogout.addActionListener(this); 
+	    btnCashier.addActionListener(this); 
+	    btnAdmin.addActionListener(this);
+	    btnInventory.addActionListener(this);
+		
     }
 
 	
@@ -98,20 +98,15 @@ public class SelectionCashier extends JFrame implements ActionListener{
 
     @Override
    	public void actionPerformed(ActionEvent ev) {
-   		if(ev.getSource()==btnCashier) {
-   			Cashier login = new Cashier();
-   			login.setVisible(true);
-   			JOptionPane.showMessageDialog(null, "Welcome "+ "Cashier","Login Successful",JOptionPane.INFORMATION_MESSAGE);
-   	        this.dispose();
-   		}else if(ev.getSource()==btnAdmin) {
-   			//JOptionPane.showMessageDialog(null, "Welcome ","Login",JOptionPane.INFORMATION_MESSAGE);
-   		}else if(ev.getSource()==btnInventory) {
-   			//JOptionPane.showMessageDialog(null, "Welcome ","Login",JOptionPane.INFORMATION_MESSAGE);
-   		}else if(ev.getSource()==btnLogout) {
+   		if(ev.getSource()==btnLogout) {
    			Login log = new Login();
    			log.setVisible(true);
-   			//JOptionPane.showMessageDialog(null, "Welcome ","Admin",JOptionPane.INFORMATION_MESSAGE);
-   			this.dispose();
+   			setVisible(false);
+ 
+   		}else if(ev.getSource()==btnCashier) {
+   			Cashier login = new Cashier();
+   			login.setVisible(true);
+   			setVisible(false);
    		}
    	}
    }

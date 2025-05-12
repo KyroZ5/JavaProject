@@ -26,7 +26,7 @@ public class Login extends JFrame implements ActionListener {
     JPasswordField txtPassword = new JPasswordField(15);   
     Color myColor = new Color(193, 234, 242); 
     JButton btnLogin = new JButton("Login");
-    JButton btnCancel = new JButton("Cancel");
+    JButton btnCancel = new JButton("Exit");
        
     ImageIcon BLogo = new ImageIcon("./img/logo-dark-transparent.png");
     Image img = BLogo.getImage();
