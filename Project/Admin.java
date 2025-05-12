@@ -16,7 +16,7 @@ public class Admin extends JFrame implements ActionListener {
     JButton btnRefresh = new JButton("Refresh");
     JButton btnLogout = new JButton("Back");
 
-    JCheckBox chkShowPassword = new JCheckBox("Show Passwords");
+    //JCheckBox chkShowPassword = new JCheckBox("Show Passwords");
 
     // Table setup (Now includes Name column)
     private DefaultTableModel tableModel;
@@ -25,7 +25,7 @@ public class Admin extends JFrame implements ActionListener {
 
     // Image Icons
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
-    
+
     public Admin() {
         setSize(500, 600);
         setLocationRelativeTo(null);
@@ -34,14 +34,15 @@ public class Admin extends JFrame implements ActionListener {
         setLayout(null);
         setResizable(false);
         setIconImage(logo.getImage());
-
+        
+        
         // Buttons
         add(btnAdd);
         add(btnEdit);
         add(btnDel);
         add(btnRefresh);
         add(btnLogout);
-        add(chkShowPassword);
+        //add(chkShowPassword);
 
         // **Aligned Buttons in a Single Row**
         btnAdd.setBounds(10, 10, 80, 30);
@@ -56,11 +57,11 @@ public class Admin extends JFrame implements ActionListener {
         btnRefresh.addActionListener(this);
         btnLogout.addActionListener(this);
 
-        chkShowPassword.setBounds(20, 560, 150, 30);
-        chkShowPassword.addActionListener(e -> {
-            passwordRenderer.setShowPasswords(chkShowPassword.isSelected());
-            userTable.repaint(); // Refresh table when toggled
-        });
+       // chkShowPassword.setBounds(320, 50, 150, 30);
+       // chkShowPassword.addActionListener(e -> {
+           // passwordRenderer.setShowPasswords(chkShowPassword.isSelected());
+            //userTable.repaint(); // Refresh table when toggled
+       // });
 
         // JTable Setup (Updated with Name column)
         tableModel = new DefaultTableModel(new String[]{"Name", "Username", "Password"}, 0) {
