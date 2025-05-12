@@ -21,14 +21,21 @@ public class Inventory extends JFrame implements ActionListener, ItemListener, C
 	// Panel 4
 	JPanel P4 = new JPanel();
 	
+	// Image
+	ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
+	
+	// Color
+	Color myColor = new Color(193, 234, 242); 
 	public Inventory() {
-	   setSize(screenSize.width, screenSize.height); // Set JFrame to full screen);
-	   setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize window
-	   setLocationRelativeTo(null);
-	   setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	   setLayout(null);
-	   setTitle("Inventory");
-	   
+	   setSize(screenSize.width, screenSize.height);
+       setExtendedState(JFrame.MAXIMIZED_BOTH);
+       setLocationRelativeTo(null);
+       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       setTitle("Inventory");
+       setIconImage(logo.getImage());
+       getContentPane().setBackground(myColor); // Background fix
+       
+       setLayout(null); // Keep manual layout for precise positioning 
 	   add(P1);
 	   add(P2);
 	   add(P3);
