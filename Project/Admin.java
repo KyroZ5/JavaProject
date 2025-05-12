@@ -23,6 +23,9 @@ public class Admin extends JFrame implements ActionListener {
     private JTable userTable;
     private static final String FILE_NAME = "users.txt";
 
+    // Image Icons
+    ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
+    
     public Admin() {
         setSize(500, 600);
         setLocationRelativeTo(null);
@@ -30,6 +33,7 @@ public class Admin extends JFrame implements ActionListener {
         setTitle("Admin");
         setLayout(null);
         setResizable(false);
+        setIconImage(logo.getImage());
 
         // Buttons
         add(btnAdd);

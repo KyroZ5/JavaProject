@@ -5,11 +5,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.awt.*;
 
 public class Login extends JFrame implements ActionListener {
-	
-    ArrayList<Integer> employeeNumber = new ArrayList<>();
+    
+    ArrayList<String> employeeName = new ArrayList<>(); // Added Names
     ArrayList<String> username = new ArrayList<>();
     ArrayList<String> password = new ArrayList<>();
     int size; 
@@ -30,22 +29,24 @@ public class Login extends JFrame implements ActionListener {
        
     ImageIcon BLogo = new ImageIcon("./img/logo-dark-transparent.png");
     Image img = BLogo.getImage();
-    Image newLogo = img.getScaledInstance(350,80,java.awt.Image.SCALE_SMOOTH);
+    Image newLogo = img.getScaledInstance(350, 80, Image.SCALE_SMOOTH);
     ImageIcon Logo = new ImageIcon(newLogo);
     JLabel bLogo = new JLabel();
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
     Font font = new Font("Montserrat", Font.BOLD, 15);
 
     public Login() {
-    	setSize(450,400);
+        setSize(450, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Login Form");
         setLayout(null);
         setResizable(false);
         setIconImage(logo.getImage());
+
         add(p2);
         add(p1);
+
         p1.add(lblUsername);
         p1.add(lblPassword);
         p1.add(txtUsername);
@@ -54,30 +55,22 @@ public class Login extends JFrame implements ActionListener {
         p1.add(btnCancel);
         p1.setBounds(0, 130, 450, 250);
         p1.setLayout(null);
-        p1.setBorder(BorderFactory.createTitledBorder(""));
         p1.setBackground(myColor);
-        p1.setBorder(null);
-        
+
         p2.setBounds(0, 0, 450, 130);
         p2.setLayout(null);
-        p2.setBorder(BorderFactory.createTitledBorder(""));
         p2.setBackground(myColor);
         p2.add(bLogo);
-        p2.setBorder(null);
-        bLogo.setBounds(40,30,375,105);
+        bLogo.setBounds(40, 30, 375, 105);
         bLogo.setIcon(Logo);
 
-        
-        
-        
-       
         lblUsername.setBounds(80, 35, 100, 30);
         lblUsername.setFont(font);
         txtUsername.setBounds(180, 35, 150, 30);
         lblPassword.setBounds(80, 85, 100, 30);
         lblPassword.setFont(font);
         txtPassword.setBounds(180, 85, 150, 30);
-        
+
         btnLogin.setBounds(280, 170, 100, 30);
         btnLogin.setFont(font);
         btnCancel.setBounds(80, 170, 100, 30);
@@ -86,21 +79,11 @@ public class Login extends JFrame implements ActionListener {
         btnLogin.addActionListener(this);
         btnCancel.addActionListener(this);
 
-        // Sample users
-        employeeNumber.add(101);
-        username.add("cashier");
-        password.add("cashier");
-
-        employeeNumber.add(102);
-        username.add("admin");
-        password.add("admin");
-
-        // **Load registered users**
+        // **Load registered users including names**
         loadUsersFromFile();  
 
         size = username.size(); // Ensure size is updated correctly
     }
-
 
     public static void main(String[] args) {
         Login log = new Login();
@@ -116,21 +99,22 @@ public class Login extends JFrame implements ActionListener {
             }
         } else if (ev.getSource() == btnLogin) {
             String UserL = txtUsername.getText().trim();
-            String PassL = new String(txtPassword.getPassword()).trim(); // Proper handling for passwords
+            String PassL = new String(txtPassword.getPassword()).trim();
             boolean authenticated = false;
 
             for (int i = 0; i < size; i++) {
                 if (username.get(i).equalsIgnoreCase(UserL) && password.get(i).equals(PassL)) {
                     authenticated = true;
-                    JOptionPane.showMessageDialog(null, "Welcome, " + UserL, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Welcome, " + employeeName.get(i), "Login Successful", JOptionPane.INFORMATION_MESSAGE);
 
                     if (UserL.equalsIgnoreCase("admin") && PassL.equals("admin")) { 
                         new SelectionAdmin().setVisible(true);
                         setVisible(false);
-                    } else if (UserL.equalsIgnoreCase(username.get(i))) { 
+                    } else { 
                         new SelectionCashier().setVisible(true);
                         setVisible(false);
                     }
+                    break; // Stop loop after finding the user
                 }
             }
 
@@ -138,14 +122,17 @@ public class Login extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Invalid username or password!", "Invalid Login", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }private void loadUsersFromFile() {
+    }
+
+    private void loadUsersFromFile() {
         try (BufferedReader br = new BufferedReader(new FileReader("users.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    username.add(parts[0]);
-                    password.add(parts[1]);
+                if (parts.length == 3) { // Updated format to read Name, Username, Password
+                    employeeName.add(parts[0]); // Name
+                    username.add(parts[1]); // Username
+                    password.add(parts[2]); // Password
                 }
             }
             size = username.size(); // Update size
@@ -153,5 +140,4 @@ public class Login extends JFrame implements ActionListener {
             e.printStackTrace();
         }
     }
- 
 }
