@@ -111,14 +111,16 @@ public class Login extends JFrame implements ActionListener {
             for (int i = 0; i < size; i++) {
                 if (username.get(i).equalsIgnoreCase(UserL) && password.get(i).equals(PassL)) {
                     authenticated = true;
-                    JOptionPane.showMessageDialog(null, "Welcome, " + UserL, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+                   
 
                     if (UserL.equalsIgnoreCase("admin") && PassL.equals("admin")) { 
                         new SelectionAdmin().setVisible(true);
                         setVisible(false);
+                        JOptionPane.showMessageDialog(null, "Welcome, " + UserL, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
                     } else if (UserL.equalsIgnoreCase(username.get(i))) { 
                         new SelectionCashier().setVisible(true);
                         setVisible(false);
+                        JOptionPane.showMessageDialog(null, "Welcome, " + UserL, "Login Successful", JOptionPane.INFORMATION_MESSAGE);
                     }
                 }
             }
