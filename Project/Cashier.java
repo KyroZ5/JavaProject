@@ -1,77 +1,95 @@
 package Project;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
-import java.text.*;
-import java.util.*;
-import javax.imageio.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import javax.imageio.ImageIO;
 
 public class Cashier extends JFrame implements ActionListener, ItemListener, ChangeListener {
 
-    // ---------------------------
-    // Main containers (auto-resizing)
-    // ---------------------------
-     JPanel leftPanel;   // Contains Transaction table and control buttons
-     JPanel rightPanel;  // Contains Receipt (top) and Payment panel (bottom)
+    // Global background color
+    private Color myColor = new Color(193, 234, 242);
 
     // ---------------------------
-    // Left Panel Components
+    // Main containers
     // ---------------------------
-     JPanel transactionPanel; // Transaction table panel
-     JPanel transactionControlPanel; // Increase/Decrease buttons panel
+    private JPanel leftPanel;   // Contains Header (logo + date/time) and Transaction Table
+    private JPanel rightPanel;  // Contains Payment Panel (top) and Receipt Panel (bottom)
 
-     DefaultTableModel transactionModel;
-     JTable transactionTable;
-     JButton btnIncrease = new JButton("Increase Qty");
-     JButton btnDecrease = new JButton("Decrease Qty");
+    // ---------------------------
+    // Header Panel (Left Panel Top)
+    // ---------------------------
+    private JPanel headerPanel;
+    private JLabel lblDateTime; // Combined date (top) and time (bottom) in 12-hr format
+    private JLabel bLogo;       // Scaled logo
+
+    // ---------------------------
+    // Left Panel Components: Transaction Table
+    // ---------------------------
+    private JPanel transactionPanel;
+    private DefaultTableModel transactionModel;
+    private JTable transactionTable;
 
     // ---------------------------
     // Right Panel Components
     // ---------------------------
-    // Receipt Panel
-     JPanel receiptPanel;
-     JTextArea receiptArea = new JTextArea();
-     JScrollPane receiptScroll = new JScrollPane(receiptArea);
-     JButton btnSaveReceipt = new JButton("Save Receipt as Image");
+    // Payment Panel (top)
+    private JPanel paymentPanel;
+    // Payment sub-panels:
+    //   - Barcode Sub-panel
+    //   - Quantity Adjustment Sub-panel
+    //   - Cash Input Sub-panel
+    //   - Number Pad Sub-panel
+    //   - Logout Sub-panel
+    private JPanel barcodePanel;
+    private JLabel lblBarcode = new JLabel("Barcode:");
+    private JTextField txtBarcode = new JTextField(15);
+    private JButton btnAddItem = new JButton("Add Item");
+    private JButton btnDeleteItem = new JButton("Delete Item");
 
-    // Payment Panel (combined Barcode Input and Cash Payment, plus number pad, logout and reset)
-     JPanel paymentPanel;
-    // Barcode sub-panel: for scanning/entering barcode and Delete function
-     JPanel barcodePanel;
-     JLabel lblBarcode = new JLabel("Barcode:");
-     JTextField txtBarcode = new JTextField(15);
-     JButton btnAddItem = new JButton("Add Item");
-     JButton btnDeleteItem = new JButton("Delete Item");
+    // Quantity Adjustment Sub-panel
+    private JPanel qtyPanel;
+    private JLabel lblQty = new JLabel("Adjust Qty:");
+    private JTextField txtQty = new JTextField(5);
+    private JButton btnApplyQty = new JButton("Apply Qty");
 
-    // Cash input sub-panel (we are replacing the old cashPanel with a new cashInputPanel)
-     JPanel cashInputPanel;
-     JLabel lblTotal = new JLabel("Total: ₱0.00");
-     JLabel lblCashReceived = new JLabel("Cash Received:");
-     JTextField txtCashReceived = new JTextField(10);
-     JButton btnProcessPayment = new JButton("Process Payment");
-     JButton btnReset = new JButton("Reset");
-     JLabel lblBalance = new JLabel("Balance: ₱0.00");
+    // Cash Input Sub-panel
+    private JPanel cashInputPanel;
+    private JLabel lblTotal = new JLabel("Total: ₱0.00");
+    private JLabel lblCashReceived = new JLabel("Cash Received:");
+    private JTextField txtCashReceived = new JTextField(10);
+    private JButton btnProcessPayment = new JButton("Process Payment");
+    private JButton btnReset = new JButton("Reset");
+    private JLabel lblBalance = new JLabel("Balance: ₱0.00");
 
-    // Number Pad sub-panel: keypad for entering cash
-     JPanel numPadPanel;
-    // Logout sub-panel
-     JPanel logoutPanel;
-     JButton btnLogout = new JButton("Logout");
+    // Number Pad Sub-panel
+    private JPanel numPadPanel;
 
-    // Color
-  	 Color myColor = new Color(193, 234, 242); 
+    // Logout Sub-panel
+    private JPanel logoutPanel;
+    private JButton btnLogout = new JButton("Logout");
+
+    // Receipt Panel (bottom)
+    private JPanel receiptPanel;
+    private JTextArea receiptArea = new JTextArea();
+    private JScrollPane receiptScroll = new JScrollPane(receiptArea);
+    private JButton btnSaveReceipt = new JButton("Save Receipt as Image");
+
     // ---------------------------
     // Inventory Data
     // ---------------------------
-    // Each inventory item loaded from file "inventory.txt"
-     Map<String, InventoryItem> inventoryMap = new HashMap<>();
+    private Map<String, InventoryItem> inventoryMap = new HashMap<>();
 
-    // Inner class representing an inventory item.
+    // Inner class representing inventory item.
     class InventoryItem {
         String barcode;
         String itemName;
@@ -85,31 +103,65 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         }
     }
 
+    // Load and scale the logo image using your provided code.
+    ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
+    ImageIcon BLogo = new ImageIcon("./img/logo-dark-transparent.png");
+    Image img = BLogo.getImage();
+    Image newLogo = img.getScaledInstance(350, 80, Image.SCALE_SMOOTH);
+    ImageIcon Logo = new ImageIcon(newLogo);
+
     public Cashier() {
-        // Frame settings using BorderLayout for auto-resizing
+        // Frame Settings
+    	setUndecorated(true);
         setTitle("Pentagram POS (Point-of-Sale) System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setIconImage(new ImageIcon("./img/logo-icon-dark-transparent.png").getImage());
-        setLayout(new BorderLayout(5, 5));
+        // Set frame icon (and background)
+        setIconImage(logo.getImage());
         getContentPane().setBackground(myColor);
+        setLayout(new BorderLayout(5, 5));
+
         // ---------------------------
-        // Left Panel: Transaction Table + Increase/Decrease buttons
+        // Left Panel Setup: Header (Logo + Date/Time) and Transaction Table
         // ---------------------------
         leftPanel = new JPanel(new BorderLayout(5, 5));
-        // Transaction Panel
-        transactionPanel = new JPanel(new BorderLayout());
-        transactionPanel.setBorder(BorderFactory.createTitledBorder("Transaction"));
-        transactionModel = new DefaultTableModel(
-                new String[]{"Barcode", "Item Name", "Qty", "Price (₱)", "Subtotal (₱)"}, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) { 
-                return false; 
+        leftPanel.setBackground(myColor);
+
+        // Header Panel
+        headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(myColor);
+        // Logo on left side
+        bLogo = new JLabel(Logo);
+        bLogo.setPreferredSize(new Dimension(375, 105));
+        headerPanel.add(bLogo, BorderLayout.CENTER);
+        // Combined Date/Time Label on right side using HTML formatting for two lines
+        lblDateTime = new JLabel();
+        lblDateTime.setHorizontalAlignment(SwingConstants.RIGHT);
+        lblDateTime.setFont(new Font("Arial", Font.BOLD, 16));
+        lblDateTime.setForeground(Color.BLACK);
+        // Initially blank; will be updated by Timer
+        headerPanel.add(lblDateTime, BorderLayout.EAST);
+        // Start Timer to update date and time
+        Timer timer = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+                String time = new SimpleDateFormat("hh:mm a").format(new Date());
+                lblDateTime.setText("<html><div style='text-align: right;'>" + date + "<br>" + time + "</div></html>");
             }
+        });
+        timer.start();
+        leftPanel.add(headerPanel, BorderLayout.NORTH);
+
+        // Transaction Table Panel
+        transactionPanel = new JPanel(new BorderLayout());
+        transactionPanel.setBackground(myColor);
+        transactionPanel.setBorder(BorderFactory.createTitledBorder("Transaction"));
+        transactionModel = new DefaultTableModel(new String[]{"Barcode", "Item Name", "Qty", "Price (₱)", "Subtotal (₱)"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) { return false; }
         };
         transactionTable = new JTable(transactionModel);
         transactionTable.setRowHeight(25);
-        // Center-align table content
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < transactionTable.getColumnCount(); i++) {
@@ -117,44 +169,24 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         }
         JScrollPane transScroll = new JScrollPane(transactionTable);
         transactionPanel.add(transScroll, BorderLayout.CENTER);
-        transactionPanel.setBackground(myColor);
-        // Transaction Control Panel: Increase/Decrease Quantity buttons
-        transactionControlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        transactionControlPanel.add(btnIncrease);
-        transactionControlPanel.add(btnDecrease);
-        transactionControlPanel.setBackground(myColor);
-        btnIncrease.addActionListener(this);
-        btnDecrease.addActionListener(this);
-
         leftPanel.add(transactionPanel, BorderLayout.CENTER);
-        leftPanel.setBackground(myColor);
-        leftPanel.add(transactionControlPanel, BorderLayout.SOUTH);
-        
+        // (Control panel with Increase/Decrease buttons has been removed.)
 
         // ---------------------------
-        // Right Panel: Receipt (top) and Payment Panel (bottom)
+        // Right Panel Setup: Split into Payment Panel (top) and Receipt Panel (bottom)
         // ---------------------------
-        rightPanel = new JPanel(new GridLayout(2, 1, 5, 5));
+        rightPanel = new JPanel(new BorderLayout(5, 5));
         rightPanel.setBackground(myColor);
         
-        // Receipt Panel
-        receiptPanel = new JPanel(new BorderLayout());
-        receiptPanel.setBorder(BorderFactory.createTitledBorder("Receipt"));
-        receiptArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        receiptArea.setEditable(false);
-        receiptPanel.add(receiptScroll, BorderLayout.CENTER);
-        receiptPanel.add(btnSaveReceipt, BorderLayout.SOUTH);
-        receiptPanel.setBackground(myColor);
-        btnSaveReceipt.addActionListener(this);
-       
-        // Payment Panel: Combined Barcode Input, Cash Payment, Number Pad, Logout, and Reset
+        // Payment Panel (Top of Right Panel)
         paymentPanel = new JPanel();
-        paymentPanel.setBackground(myColor);
         paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
         paymentPanel.setBorder(BorderFactory.createTitledBorder("Payment"));
-
-        // Barcode sub-panel
+        paymentPanel.setBackground(myColor);
+        
+        // Barcode Sub-panel
         barcodePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        barcodePanel.setBackground(myColor);
         barcodePanel.add(lblBarcode);
         barcodePanel.add(txtBarcode);
         barcodePanel.add(btnAddItem);
@@ -162,81 +194,106 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         txtBarcode.addActionListener(this);
         btnAddItem.addActionListener(this);
         btnDeleteItem.addActionListener(this);
-
-        // New Cash Input sub-panel with vertical stacking:
-        cashInputPanel = new JPanel();
-        cashInputPanel.setLayout(new GridLayout(3, 1, 5, 5));
-        // Row 1: Total
+        
+        // Quantity Adjustment Sub-panel
+        qtyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        qtyPanel.setBackground(myColor);
+        qtyPanel.add(lblQty);
+        qtyPanel.add(txtQty);
+        qtyPanel.add(btnApplyQty);
+        btnApplyQty.addActionListener(this);
+        
+        // Cash Input Sub-panel
+        cashInputPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        cashInputPanel.setBackground(myColor);
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        totalPanel.setBackground(myColor);
         totalPanel.add(lblTotal);
-        // Row 2: Cash Received with text field and Process Payment/Reset buttons
         JPanel cashReceivedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        cashReceivedPanel.setBackground(myColor);
         cashReceivedPanel.add(lblCashReceived);
         cashReceivedPanel.add(txtCashReceived);
         cashReceivedPanel.add(btnProcessPayment);
         cashReceivedPanel.add(btnReset);
-        // Row 3: Balance
         JPanel balancePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        balancePanel.setBackground(myColor);
         balancePanel.add(lblBalance);
         cashInputPanel.add(totalPanel);
         cashInputPanel.add(cashReceivedPanel);
         cashInputPanel.add(balancePanel);
         btnProcessPayment.addActionListener(this);
         btnReset.addActionListener(this);
-
-        // Number Pad sub-panel
+        
+        // Number Pad Sub-panel with larger buttons
         numPadPanel = new JPanel(new GridLayout(4, 3, 5, 5));
+        numPadPanel.setBackground(myColor);
         String[] keys = {"7", "8", "9", "4", "5", "6", "1", "2", "3", "0", ".", "Clear"};
-        for (String key : keys) {
+        for(String key : keys) {
             JButton btn = new JButton(key);
-            btn.setFont(new Font("Arial", Font.BOLD, 16));
+            btn.setFont(new Font("Arial", Font.BOLD, 24));
+            btn.setPreferredSize(new Dimension(80, 80));
+            btn.setFocusable(false);  // so it doesn't steal focus from input fields
             btn.addActionListener(this);
             numPadPanel.add(btn);
         }
-
-        // Logout sub-panel; add some vertical spacer to push logout button lower.
+        
+        // Logout Sub-panel with extra vertical space
         logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        logoutPanel.add(Box.createVerticalStrut(20)); // vertical space
         logoutPanel.setBackground(myColor);
+        logoutPanel.add(Box.createVerticalStrut(20));
         logoutPanel.add(btnLogout);
         btnLogout.addActionListener(this);
-
-        // Add sub-panels to Payment Panel
+        
+        // Add all sub-panels to Payment Panel in order
         paymentPanel.add(barcodePanel);
+        paymentPanel.add(qtyPanel);
         paymentPanel.add(cashInputPanel);
         paymentPanel.add(numPadPanel);
-        paymentPanel.add(Box.createVerticalStrut(20)); // extra space before logout
+        paymentPanel.add(Box.createVerticalStrut(20));
         paymentPanel.add(logoutPanel);
-
-        rightPanel.add(receiptPanel);
-        rightPanel.add(paymentPanel);
-
+        
+        // Receipt Panel (Bottom of Right Panel)
+        receiptPanel = new JPanel(new BorderLayout());
+        receiptPanel.setBorder(BorderFactory.createTitledBorder("Receipt"));
+        receiptPanel.setBackground(myColor);
+        receiptArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        receiptArea.setEditable(false);
+        JScrollPane recScroll = new JScrollPane(receiptArea);
+        recScroll.getViewport().setBackground(myColor);
+        receiptPanel.add(recScroll, BorderLayout.CENTER);
+        receiptPanel.add(btnSaveReceipt, BorderLayout.SOUTH);
+        btnSaveReceipt.addActionListener(this);
+        
+        // Add Payment (top) and Receipt (bottom) to Right Panel using BorderLayout
+        // (Here we use a vertical split: Payment panel at NORTH and Receipt panel at CENTER)
+        rightPanel.add(paymentPanel, BorderLayout.NORTH);
+        rightPanel.add(receiptPanel, BorderLayout.CENTER);
+        
         // ---------------------------
-        // Main Frame Layout: add Left and Right panels
+        // Main Frame Layout: add Left and Right Panels
         // ---------------------------
         add(leftPanel, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
-
-        // Load inventory data from file
+        
+        // Load Inventory Data
         loadInventoryData();
-
-        // Initialize receipt header
+        
+        // Initialize Receipt Header
         receiptArea.setText("               Pentagram POS Receipt\n");
         receiptArea.append("-------------------------------------------------------------\n");
     }
-
+    
     // ---------------------------
     // Inventory Data Methods
     // ---------------------------
-    // Load inventory from "inventory.txt"
     private void loadInventoryData() {
         inventoryMap.clear();
         String filename = "inventory.txt";
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
-            while ((line = br.readLine()) != null) {
+            while((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 4) {
+                if(parts.length == 4) {
                     String barcode = parts[0].trim();
                     String itemName = parts[1].trim();
                     int stock = Integer.parseInt(parts[2].trim());
@@ -244,174 +301,121 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
                     inventoryMap.put(barcode, new InventoryItem(barcode, itemName, stock, price));
                 }
             }
-        } catch (IOException ex) {
+        } catch(IOException ex) {
             ex.printStackTrace();
         }
     }
-
-    // Save updated inventory data back to "inventory.txt"
+    
     private void saveInventoryData() {
         String filename = "inventory.txt";
         try (PrintWriter out = new PrintWriter(new FileWriter(filename))) {
-            for (InventoryItem item : inventoryMap.values()) {
+            for(InventoryItem item : inventoryMap.values()) {
                 out.println(item.barcode + "," + item.itemName + "," + item.stock + "," + item.price);
             }
-        } catch (IOException ex) {
+        } catch(IOException ex) {
             ex.printStackTrace();
         }
     }
-
+    
     // ---------------------------
     // Transaction Methods
     // ---------------------------
-    // Add an item to the current transaction using its barcode,
-    // checking available stock.
     private void addItemToTransaction(String barcode) {
-        if (barcode.isEmpty()) return;
-        if (!inventoryMap.containsKey(barcode)) {
+        if(barcode.isEmpty()) return;
+        if(!inventoryMap.containsKey(barcode)) {
             JOptionPane.showMessageDialog(this, "Item not found in inventory!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         InventoryItem item = inventoryMap.get(barcode);
-        if (item.stock <= 0) {
+        if(item.stock <= 0) {
             JOptionPane.showMessageDialog(this, "This item is out of stock!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         int rowIndex = -1;
-        // Check if the item is already in the transaction table
-        for (int i = 0; i < transactionModel.getRowCount(); i++) {
-            if (transactionModel.getValueAt(i, 0).toString().equals(barcode)) {
+        for(int i = 0; i < transactionModel.getRowCount(); i++) {
+            if(transactionModel.getValueAt(i, 0).toString().equals(barcode)) {
                 rowIndex = i;
                 break;
             }
         }
         int newQty = (rowIndex != -1) ? Integer.parseInt(transactionModel.getValueAt(rowIndex, 2).toString()) + 1 : 1;
-        if (newQty > item.stock) {
+        if(newQty > item.stock) {
             JOptionPane.showMessageDialog(this, "Insufficient stock! Available: " + item.stock, "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (rowIndex != -1) {
+        if(rowIndex != -1) {
             transactionModel.setValueAt(newQty, rowIndex, 2);
             double subtotal = newQty * item.price;
             transactionModel.setValueAt(String.format("₱%.2f", subtotal), rowIndex, 4);
         } else {
             double subtotal = 1 * item.price;
-            transactionModel.addRow(new Object[]{
-                barcode,
-                item.itemName,
-                1,
-                String.format("₱%.2f", item.price),
-                String.format("₱%.2f", subtotal)
-            });
+            transactionModel.addRow(new Object[]{barcode, item.itemName, 1, String.format("₱%.2f", item.price), String.format("₱%.2f", subtotal)});
         }
         updateTotal();
     }
-
-    // Delete the selected transaction row
+    
     private void deleteSelectedItem() {
         int selectedIndex = transactionTable.getSelectedRow();
-        if (selectedIndex != -1) {
+        if(selectedIndex != -1) {
             transactionModel.removeRow(selectedIndex);
             updateTotal();
         } else {
             JOptionPane.showMessageDialog(this, "Select an item to delete.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    // Increase quantity for the selected transaction row, checking available stock
+    
     private void increaseQuantity() {
-        int selectedIndex = transactionTable.getSelectedRow();
-        if (selectedIndex != -1) {
-            String barcode = transactionModel.getValueAt(selectedIndex, 0).toString();
-            InventoryItem item = inventoryMap.get(barcode);
-            int qty = Integer.parseInt(transactionModel.getValueAt(selectedIndex, 2).toString());
-            if (qty + 1 > item.stock) {
-                JOptionPane.showMessageDialog(this, "Insufficient stock! Available: " + item.stock, "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            qty++;
-            transactionModel.setValueAt(qty, selectedIndex, 2);
-            double subtotal = qty * item.price;
-            transactionModel.setValueAt(String.format("₱%.2f", subtotal), selectedIndex, 4);
-            updateTotal();
-        } else {
-            JOptionPane.showMessageDialog(this, "Select an item to increase quantity.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // (Increase/Decrease functions removed as per your request.)
     }
-
-    // Decrease quantity for the selected transaction row
+    
     private void decreaseQuantity() {
-        int selectedIndex = transactionTable.getSelectedRow();
-        if (selectedIndex != -1) {
-            String barcode = transactionModel.getValueAt(selectedIndex, 0).toString();
-            InventoryItem item = inventoryMap.get(barcode);
-            int qty = Integer.parseInt(transactionModel.getValueAt(selectedIndex, 2).toString());
-            if (qty > 1) {
-                qty--;
-                transactionModel.setValueAt(qty, selectedIndex, 2);
-                double subtotal = qty * item.price;
-                transactionModel.setValueAt(String.format("₱%.2f", subtotal), selectedIndex, 4);
-            } else {
-                int confirm = JOptionPane.showConfirmDialog(this, "Quantity is 1. Remove item?", "Confirm", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    transactionModel.removeRow(selectedIndex);
-                }
-            }
-            updateTotal();
-        } else {
-            JOptionPane.showMessageDialog(this, "Select an item to decrease quantity.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        // (Increase/Decrease functions removed as per your request.)
     }
-
-    // Update the total cost displayed
+    
     private void updateTotal() {
         double total = 0.0;
-        for (int i = 0; i < transactionModel.getRowCount(); i++) {
+        for(int i = 0; i < transactionModel.getRowCount(); i++) {
             String subStr = transactionModel.getValueAt(i, 4).toString().replace("₱", "");
             total += Double.parseDouble(subStr);
         }
         lblTotal.setText("Total: ₱" + String.format("%.2f", total));
     }
-
+    
     // ---------------------------
     // Payment and Receipt Methods
     // ---------------------------
-    // Process payment, generate receipt, and update inventory stock.
     private void processPayment() {
         double total = 0.0;
-        for (int i = 0; i < transactionModel.getRowCount(); i++) {
+        for(int i = 0; i < transactionModel.getRowCount(); i++) {
             String subStr = transactionModel.getValueAt(i, 4).toString().replace("₱", "");
             total += Double.parseDouble(subStr);
         }
         double cash;
         try {
             cash = Double.parseDouble(txtCashReceived.getText().trim());
-        } catch (NumberFormatException ex) {
+        } catch(NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid cash amount!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (cash < total) {
+        if(cash < total) {
             JOptionPane.showMessageDialog(this, "Insufficient cash!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         double balance = cash - total;
         lblBalance.setText("Balance: ₱" + String.format("%.2f", balance));
         generateReceipt(total, cash, balance);
-        // Update inventory stock based on sold items
         updateInventoryAfterSale();
     }
-
-    // Generate the receipt text with proper alignment using a monospaced font
+    
     private void generateReceipt(double total, double cash, double balance) {
         receiptArea.setText("");
         receiptArea.append("               Pentagram POS Receipt\n");
         receiptArea.append("-------------------------------------------------------------\n");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm a");
         receiptArea.append("Date: " + dateFormat.format(new Date()) + "\n\n");
-        // Columns: Barcode (10), Item (30), Qty (5), Price (10), Subtotal (10)
         receiptArea.append(String.format("%-10s %-30s %-5s %-10s %-10s\n", "Barcode", "Item", "Qty", "Price", "Subtotal"));
         receiptArea.append("-------------------------------------------------------------\n");
-        for (int i = 0; i < transactionModel.getRowCount(); i++) {
+        for(int i = 0; i < transactionModel.getRowCount(); i++) {
             String barcode = transactionModel.getValueAt(i, 0).toString();
             String itemName = transactionModel.getValueAt(i, 1).toString();
             String qty = transactionModel.getValueAt(i, 2).toString();
@@ -425,14 +429,13 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         receiptArea.append("Balance: ₱" + String.format("%.2f", balance) + "\n\n");
         receiptArea.append("         THANK YOU FOR SHOPPING!\n");
     }
-
-    // Save the contents of receiptArea as an image (PNG)
+    
     private void saveReceiptAsImage() {
         try {
             Dimension size = receiptArea.getPreferredSize();
             BufferedImage image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2d = image.createGraphics();
-            g2d.setColor(Color.WHITE); // White background
+            g2d.setColor(Color.WHITE);
             g2d.fillRect(0, 0, size.width, size.height);
             receiptArea.setOpaque(true);
             receiptArea.setBackground(Color.WHITE);
@@ -442,109 +445,137 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
             File file = new File("receipt.png");
             ImageIO.write(image, "png", file);
             JOptionPane.showMessageDialog(this, "Receipt saved as " + file.getAbsolutePath(), "Success", JOptionPane.INFORMATION_MESSAGE);
-            // After saving the receipt, reset everything for the next sale.
             resetSale();
-        } catch (IOException ex) {
+        } catch(IOException ex) {
             JOptionPane.showMessageDialog(this, "Error saving image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
     }
-
-    // ---------------------------
-    // Update inventory stock after sale and save back to file.
-    // Show a warning if any item's stock reaches 0.
+    
     private void updateInventoryAfterSale() {
-        // For each transaction, subtract the sold quantity from inventory stock.
-        for (int i = 0; i < transactionModel.getRowCount(); i++) {
+        for(int i = 0; i < transactionModel.getRowCount(); i++) {
             String barcode = transactionModel.getValueAt(i, 0).toString();
             int soldQty = Integer.parseInt(transactionModel.getValueAt(i, 2).toString());
-            if (inventoryMap.containsKey(barcode)) {
+            if(inventoryMap.containsKey(barcode)) {
                 InventoryItem item = inventoryMap.get(barcode);
-                item.stock = item.stock - soldQty;
-                if (item.stock <= 0) {
+                item.stock -= soldQty;
+                if(item.stock <= 0) {
                     JOptionPane.showMessageDialog(this, "Warning: " + item.itemName + " is now out of stock!", "Out of Stock", JOptionPane.WARNING_MESSAGE);
-                    item.stock = 0; // Ensure stock does not go negative.
+                    item.stock = 0;
                 }
             }
         }
         saveInventoryData();
     }
-
-    // Reset the sale interface for a new transaction.
+    
     private void resetSale() {
-        // Clear the transaction table
         transactionModel.setRowCount(0);
-        // Clear cash and barcode text fields
         txtCashReceived.setText("");
         txtBarcode.setText("");
-        // Reset total and balance labels
+        txtQty.setText("");
         lblTotal.setText("Total: ₱0.00");
         lblBalance.setText("Balance: ₱0.00");
-        // Reset receipt area header
         receiptArea.setText("               Pentagram POS Receipt\n");
         receiptArea.append("-------------------------------------------------------------\n");
     }
-
+    
+    // ---------------------------
+    // New Quantity Adjustment Method
+    // ---------------------------
+    private void applyQuantityAdjustment() {
+        int selectedRow = transactionTable.getSelectedRow();
+        if(selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Select an item in the transaction table to adjust quantity.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String barcode = transactionModel.getValueAt(selectedRow, 0).toString();
+        InventoryItem item = inventoryMap.get(barcode);
+        try {
+            int newQty = Integer.parseInt(txtQty.getText().trim());
+            if(newQty < 1) {
+                JOptionPane.showMessageDialog(this, "Quantity must be at least 1.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if(newQty > item.stock) {
+                JOptionPane.showMessageDialog(this, "Insufficient stock! Available: " + item.stock, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            transactionModel.setValueAt(newQty, selectedRow, 2);
+            double subtotal = newQty * item.price;
+            transactionModel.setValueAt(String.format("₱%.2f", subtotal), selectedRow, 4);
+            updateTotal();
+            txtQty.setText("");
+        } catch(NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid quantity entered.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     // ---------------------------
     // Action Handling
     // ---------------------------
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
-        // Barcode actions: add item via Add button or Enter in barcode text field.
-        if (src == btnAddItem || src == txtBarcode) {
+        if(src == btnAddItem || src == txtBarcode) {
             String barcode = txtBarcode.getText().trim();
             addItemToTransaction(barcode);
             txtBarcode.setText("");
         }
-        // Delete item from transaction table.
-        else if (src == btnDeleteItem) {
+        else if(src == btnDeleteItem) {
             deleteSelectedItem();
         }
-        // Increase/Decrease quantity.
-        else if (src == btnIncrease) { 
-            increaseQuantity();
-        } else if (src == btnDecrease) {
-            decreaseQuantity();
-        }
-        // Process Payment.
-        else if (src == btnProcessPayment) {
+        else if(src == btnProcessPayment) {
             processPayment();
         }
-        // Reset Sale functionality.
-        else if (src == btnReset) {
+        else if(src == btnReset) {
             resetSale();
         }
-        // Save Receipt as Image.
-        else if (src == btnSaveReceipt) {
+        else if(src == btnSaveReceipt) {
             saveReceiptAsImage();
         }
-        // Logout: go to SelectionCashier and close this window.
-        else if (src == btnLogout) {
+        else if(src == btnLogout) {
             new SelectionCashier().setVisible(true);
             dispose();
         }
-        // Number pad actions: If a key button is clicked on the numPadPanel.
-        else if (src instanceof JButton) {
+        else if(src == btnApplyQty) {
+            applyQuantityAdjustment();
+        }
+        // Number Pad Actions:
+        else if(src instanceof JButton) {
             String cmd = e.getActionCommand();
-            if (cmd.equals("Clear")) {
-                txtCashReceived.setText("");
-            } else if ("0123456789.".contains(cmd)) {
-                txtCashReceived.setText(txtCashReceived.getText() + cmd);
+            if(cmd.equals("Clear")) {
+                if(txtBarcode.isFocusOwner()) {
+                    txtBarcode.setText("");
+                } else if(txtCashReceived.isFocusOwner()) {
+                    txtCashReceived.setText("");
+                } else if(txtQty.isFocusOwner()) {
+                    txtQty.setText("");
+                } else {
+                    txtBarcode.requestFocusInWindow();
+                    txtBarcode.setText("");
+                }
+            }
+            else if("0123456789.".contains(cmd)) {
+                if(txtBarcode.isFocusOwner()) {
+                    txtBarcode.setText(txtBarcode.getText() + cmd);
+                } else if(txtCashReceived.isFocusOwner()) {
+                    txtCashReceived.setText(txtCashReceived.getText() + cmd);
+                } else if(txtQty.isFocusOwner()) {
+                    txtQty.setText(txtQty.getText() + cmd);
+                } else {
+                    txtBarcode.requestFocusInWindow();
+                    txtBarcode.setText(txtBarcode.getText() + cmd);
+                }
             }
         }
     }
-
+    
     @Override
-    public void itemStateChanged(ItemEvent e) {
-        // Not used.
-    }
-
+    public void itemStateChanged(ItemEvent e) { }
+    
     @Override
-    public void stateChanged(ChangeEvent e) {
-        // Not used.
-    }
-
+    public void stateChanged(ChangeEvent e) { }
+    
     // ---------------------------
     // Main Method
     // ---------------------------
