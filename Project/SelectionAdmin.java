@@ -36,7 +36,7 @@ public class SelectionAdmin extends JFrame implements ActionListener{
 	
 	JLabel lblLogout = new JLabel("Logout");
 	JLabel lblCashier = new JLabel("Cashier");
-	JLabel lblAdmin = new JLabel("Admin");
+	JLabel lblAdmin = new JLabel("Accounts");
 	JLabel lblInven = new JLabel("Inventory");
 	Color myColor = new Color(193, 234, 242); 
     Font font = new Font("Montserrat", Font.BOLD, 15);
@@ -70,9 +70,9 @@ public class SelectionAdmin extends JFrame implements ActionListener{
 	    lblInven.setBounds(45,95,120,80);
 	    lblInven.setEnabled(true); 
         lblInven.setFont(font);
-	    lblCashier.setBounds(157,95,120,80);
+	    lblCashier.setBounds(150,95,120,80);
         lblCashier.setFont(font);
-	    lblAdmin.setBounds(260,95,120,80);
+	    lblAdmin.setBounds(245,95,120,80);
 	    lblAdmin.setEnabled(true); 
         lblAdmin.setFont(font);
 	    btnLogout.setBounds(350,40,80,80);

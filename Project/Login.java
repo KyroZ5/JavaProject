@@ -76,19 +76,16 @@ public class Login extends JFrame implements ActionListener {
         btnLogin.addActionListener(this);
         btnCancel.addActionListener(this);
 
-        // Sample users
-        //employeeNumber.add(101);
         username.add("cashier");
         password.add("cashier");
 
-       // employeeNumber.add(102);
         username.add("admin");
         password.add("admin");
         
         // **Load registered users including names**
         loadUsersFromFile();  
 
-        size = username.size(); // Ensure size is updated correctly
+        size = username.size();
     }
 
     public static void main(String[] args) {
@@ -137,18 +134,17 @@ public class Login extends JFrame implements ActionListener {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 3) { // Format: Name, Username, Password
+                if (parts.length == 3) { 
                     employeeName.add(parts[0]);
                     username.add(parts[1]);
                     password.add(parts[2]);
                 }
             }
-            size = username.size(); // Update size
+            size = username.size();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // Debug: Track loaded users
         System.out.println("Loaded users: " + employeeName);
     }
 }

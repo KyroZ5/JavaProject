@@ -8,33 +8,26 @@ import java.awt.event.*;
 import java.io.*;
 
 public class InventoryAdmin extends JFrame implements ActionListener {
-
-    // Panels
+	
     JPanel inventoryPanel = new JPanel();
     JPanel controlPanel = new JPanel();
 
-    // Table setup
     DefaultTableModel tableModel;
     JTable inventoryTable;
 
-    // Buttons for Admin Functions
     JButton btnAdd = new JButton("Add Item");
     JButton btnEdit = new JButton("Edit Item");
     JButton btnDelete = new JButton("Delete Item");
     JButton btnRefresh = new JButton("Refresh List");
     JButton btnBack = new JButton("Back");
 
-    // Inventory Database (Loaded from File)
-    private static final String FILE_NAME = "inventory.txt"; // Inventory storage
+    private static final String FILE_NAME = "inventory.txt";
 
-    // Image Icons
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
 
-    // Color
     Color myColor = new Color(193, 234, 242);
 
     public InventoryAdmin() {
-        // Frame Settings
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,17 +35,15 @@ public class InventoryAdmin extends JFrame implements ActionListener {
         setLayout(new BorderLayout());
         setIconImage(logo.getImage());
 
-        // Inventory Table Setup (Non-Editable)
         tableModel = new DefaultTableModel(new String[]{"Barcode", "Item Name", "Stock", "Price (₱)"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Prevent manual editing
+                return false; 
             }
         };
         inventoryTable = new JTable(tableModel);
         inventoryTable.setRowHeight(25);
         
-        // Ensure text is centered in all columns
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < inventoryTable.getColumnCount(); i++) {
@@ -65,8 +56,7 @@ public class InventoryAdmin extends JFrame implements ActionListener {
         inventoryPanel.setBorder(BorderFactory.createTitledBorder("Inventory List"));
         inventoryPanel.add(scrollPane, BorderLayout.CENTER);
         inventoryPanel.setBackground(myColor);
-        
-        // Control Panel Setup
+
         controlPanel.setLayout(new FlowLayout());
         controlPanel.setBorder(BorderFactory.createTitledBorder("Admin Controls"));
         controlPanel.setBackground(myColor);
@@ -83,21 +73,19 @@ public class InventoryAdmin extends JFrame implements ActionListener {
         btnRefresh.addActionListener(this);
         btnBack.addActionListener(this);
 
-        // Load Inventory Items
         loadInventory();
 
         add(inventoryPanel, BorderLayout.CENTER);
         add(controlPanel, BorderLayout.SOUTH);
     }
 
-    // Loads inventory items from file
     private void loadInventory() {
-        tableModel.setRowCount(0); // Clear table before reloading
+        tableModel.setRowCount(0);
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 4) { // Expected format: Barcode, Item, Stock, Price
+                if (parts.length == 4) { 
                     tableModel.addRow(new Object[]{parts[0].trim(), parts[1].trim(), parts[2].trim(), "₱" + parts[3].trim()});
                 }
             }
@@ -106,7 +94,6 @@ public class InventoryAdmin extends JFrame implements ActionListener {
         }
     }
 
-    // Saves inventory list back to file
     private void saveInventory() {
         try (PrintWriter out = new PrintWriter(new FileWriter(FILE_NAME))) {
             for (int i = 0; i < tableModel.getRowCount(); i++) {
@@ -123,7 +110,6 @@ public class InventoryAdmin extends JFrame implements ActionListener {
         }
     }
 
-    // Handles Admin Functions
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == btnAdd) {
@@ -140,22 +126,38 @@ public class InventoryAdmin extends JFrame implements ActionListener {
         } else if (e.getSource() == btnEdit) {
             int selectedRow = inventoryTable.getSelectedRow();
             if (selectedRow != -1) {
-                String currentBarcode = tableModel.getValueAt(selectedRow, 0).toString();
                 String currentItem = tableModel.getValueAt(selectedRow, 1).toString();
                 String currentStock = tableModel.getValueAt(selectedRow, 2).toString();
                 String currentPrice = tableModel.getValueAt(selectedRow, 3).toString().replace("₱", "");
 
-                // 🔒 Mask password input using JPasswordField
                 JPasswordField pf = new JPasswordField();
                 int okCxl = JOptionPane.showConfirmDialog(this, pf, "Enter admin password to confirm:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                
                 if (okCxl == JOptionPane.OK_OPTION) {
                     String enteredPassword = new String(pf.getPassword());
+                    
                     if (enteredPassword.equals("admin")) {
                         String newItem = JOptionPane.showInputDialog("Edit item name:", currentItem);
-                        String newStock = JOptionPane.showInputDialog("Edit stock quantity:", currentStock);
-                        String newPrice = JOptionPane.showInputDialog("Edit price:", currentPrice);
+                        String newStock;
+                       
+                        while (true) {
+                            newStock = JOptionPane.showInputDialog("Edit stock quantity:", currentStock);
+                            
+                            if (newStock == null) {
+                                return; 
+                            }
+                            
+                            try {
+                                Integer.parseInt(newStock.trim());
+                                break; 
+                            } catch (NumberFormatException ex) {
+                                JOptionPane.showMessageDialog(this, "Invalid stock quantity! Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
 
-                        if (newItem != null && newStock != null && newPrice != null) {
+                        String newPrice = JOptionPane.showInputDialog("Edit price:", currentPrice);
+                        
+                        if (newItem != null && newPrice != null) {
                             tableModel.setValueAt(newItem.trim(), selectedRow, 1);
                             tableModel.setValueAt(newStock.trim(), selectedRow, 2);
                             tableModel.setValueAt("₱" + newPrice.trim(), selectedRow, 3);
@@ -172,7 +174,6 @@ public class InventoryAdmin extends JFrame implements ActionListener {
         } else if (e.getSource() == btnDelete) {
             int selectedRow = inventoryTable.getSelectedRow();
             if (selectedRow != -1) {
-                // 🔒 Mask password input using JPasswordField
                 JPasswordField pf = new JPasswordField();
                 int okCxl = JOptionPane.showConfirmDialog(this, pf, "Enter admin password to confirm deletion:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                 if (okCxl == JOptionPane.OK_OPTION) {

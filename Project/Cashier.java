@@ -1,9 +1,11 @@
 package Project;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.event.*;
 import javax.swing.table.*;
+
+import Project.AdminCashier.InventoryItem;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -26,80 +28,53 @@ import javax.print.attribute.standard.JobName;
 
 public class Cashier extends JFrame implements ActionListener, ItemListener, ChangeListener {
 
-    // Global background color
-    private Color myColor = new Color(193, 234, 242);
+     Color myColor = new Color(193, 234, 242);
 
-    // ---------------------------
-    // Main containers
-    // ---------------------------
-    private JPanel leftPanel;   // Contains Header (logo + date/time) and Transaction Table
-    private JPanel rightPanel;  // Contains Payment Panel (top) and Receipt Panel (bottom)
+     JPanel leftPanel;   
+     JPanel rightPanel;  
 
-    // ---------------------------
-    // Header Panel (Left Panel Top)
-    // ---------------------------
-    private JPanel headerPanel;
-    private JLabel lblDateTime; // Combined date (top) and time (bottom) in 12-hr format
-    private JLabel bLogo;       // Scaled logo
 
-    // ---------------------------
-    // Left Panel Components: Transaction Table
-    // ---------------------------
-    private JPanel transactionPanel;
-    private DefaultTableModel transactionModel;
-    private JTable transactionTable;
+     JPanel headerPanel;
+     JLabel lblDateTime;
+     JLabel bLogo; 
 
-    // ---------------------------
-    // Right Panel Components
-    // ---------------------------
-    // Payment Panel (top)
-    private JPanel paymentPanel;
-    // Payment sub-panels:
-    //   - Barcode Sub-panel
-    //   - Quantity Adjustment Sub-panel
-    //   - Cash Input Sub-panel
-    //   - Number Pad Sub-panel
-    //   - Logout Sub-panel
-    private JPanel barcodePanel;
-    private JLabel lblBarcode = new JLabel("Barcode:");
-    private JTextField txtBarcode = new JTextField(15);
-    private JButton btnAddItem = new JButton("Add Item");
-    private JButton btnDeleteItem = new JButton("Delete Item");
+  
+     JPanel transactionPanel;
+     DefaultTableModel transactionModel;
+     JTable transactionTable;
+     
+     JPanel paymentPanel;
+     JPanel barcodePanel;
+     JLabel lblBarcode = new JLabel("Barcode:");
+     JTextField txtBarcode = new JTextField(15);
+     JButton btnAddItem = new JButton("Add Item");
+     JButton btnDeleteItem = new JButton("Delete Item");
 
-    // Quantity Adjustment Sub-panel
-    private JPanel qtyPanel;
-    private JLabel lblQty = new JLabel("Adjust Qty:");
-    private JTextField txtQty = new JTextField(5);
-    private JButton btnApplyQty = new JButton("Apply Qty");
+     JPanel qtyPanel;
+     JLabel lblQty = new JLabel("Adjust Qty:");
+     JTextField txtQty = new JTextField(5);
+     JButton btnApplyQty = new JButton("Apply Qty");
 
-    // Cash Input Sub-panel
-    private JPanel cashInputPanel;
-    private JLabel lblTotal = new JLabel("Total: ₱0.00");
-    private JLabel lblCashReceived = new JLabel("Cash Received:");
-    private JTextField txtCashReceived = new JTextField(10);
-    private JButton btnProcessPayment = new JButton("Process Payment");
-    private JButton btnReset = new JButton("Reset");
-    private JLabel lblBalance = new JLabel("Balance: ₱0.00");
+     JPanel cashInputPanel;
+     JLabel lblTotal = new JLabel("Total: ₱0.00");
+     JLabel lblCashReceived = new JLabel("Cash Received:");
+     JTextField txtCashReceived = new JTextField(10);
+     JButton btnProcessPayment = new JButton("Process Payment");
+     JButton btnReset = new JButton("Reset");
+     JLabel lblBalance = new JLabel("Balance: ₱0.00");
 
-    // Number Pad Sub-panel
-    private JPanel numPadPanel;
+     JPanel numPadPanel;
+     
+     JPanel logoutPanel;
+     JButton btnLogout = new JButton("Menu");
 
-    // Logout Sub-panel
-    private JPanel logoutPanel;
-    private JButton btnLogout = new JButton("Menu");
+     JPanel receiptPanel;
+     JTextArea receiptArea = new JTextArea();
+     JScrollPane receiptScroll = new JScrollPane(receiptArea);
+     JButton btnPrintReceipt = new JButton("Print Receipt");
 
-    // Receipt Panel (bottom)
-    private JPanel receiptPanel;
-    private JTextArea receiptArea = new JTextArea();
-    private JScrollPane receiptScroll = new JScrollPane(receiptArea);
-    private JButton btnPrintReceipt = new JButton("Print Receipt");
-
-    // ---------------------------
-    // Inventory Data
-    // ---------------------------
     private Map<String, InventoryItem> inventoryMap = new HashMap<>();
 
-    // Inner class representing inventory item.
     class InventoryItem {
         String barcode;
         String itemName;
@@ -113,14 +88,12 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         }
     }
 
-    // Load and scale the logo image using your provided code.
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
     ImageIcon BLogo = new ImageIcon("./img/logo-dark-transparent.png");
     Image img = BLogo.getImage();
     Image newLogo = img.getScaledInstance(350, 80, Image.SCALE_SMOOTH);
     ImageIcon Logo = new ImageIcon(newLogo);
 
-    // Helper method to center text within a given width.
     private String centerText(String text, int width) {
         int padSize = (width - text.length()) / 2;
         StringBuilder padding = new StringBuilder();
@@ -131,37 +104,29 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
     }
 
     public Cashier() {
-        // Frame Settings
         setUndecorated(true);
         setTitle("Pentagram POS (Point-of-Sale) System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        // Set frame icon (and background)
         setIconImage(logo.getImage());
         getContentPane().setBackground(myColor);
         setLayout(new BorderLayout(5, 5));
 
-        // ---------------------------
-        // Left Panel Setup: Header (Logo + Date/Time) and Transaction Table
-        // ---------------------------
+      
         leftPanel = new JPanel(new BorderLayout(5, 5));
         leftPanel.setBackground(myColor);
 
-        // Header Panel
         headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(myColor);
-        // Logo on left side
         bLogo = new JLabel(Logo);
         bLogo.setPreferredSize(new Dimension(375, 105));
         headerPanel.add(bLogo, BorderLayout.CENTER);
-        // Combined Date/Time Label on right side using HTML formatting for two lines
         lblDateTime = new JLabel();
         lblDateTime.setHorizontalAlignment(SwingConstants.RIGHT);
         lblDateTime.setFont(new Font("Arial", Font.BOLD, 16));
         lblDateTime.setForeground(Color.BLACK);
-        // Initially blank; will be updated by Timer
         headerPanel.add(lblDateTime, BorderLayout.EAST);
-        // Start Timer to update date and time
+        
         Timer timer = new Timer(1000, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
@@ -172,7 +137,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         timer.start();
         leftPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Transaction Table Panel
+   
         transactionPanel = new JPanel(new BorderLayout());
         transactionPanel.setBackground(myColor);
         transactionPanel.setBorder(BorderFactory.createTitledBorder("Transaction"));
@@ -190,21 +155,15 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         JScrollPane transScroll = new JScrollPane(transactionTable);
         transactionPanel.add(transScroll, BorderLayout.CENTER);
         leftPanel.add(transactionPanel, BorderLayout.CENTER);
-        // (Control panel with Increase/Decrease buttons has been removed.)
-
-        // ---------------------------
-        // Right Panel Setup: Split into Payment Panel (top) and Receipt Panel (bottom)
-        // ---------------------------
+       
         rightPanel = new JPanel(new BorderLayout(5, 5));
         rightPanel.setBackground(myColor);
         
-        // Payment Panel (Top of Right Panel)
         paymentPanel = new JPanel();
         paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
         paymentPanel.setBorder(BorderFactory.createTitledBorder("Payment"));
         paymentPanel.setBackground(myColor);
         
-        // Barcode Sub-panel
         barcodePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         barcodePanel.setBackground(myColor);
         barcodePanel.add(lblBarcode);
@@ -215,7 +174,6 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         btnAddItem.addActionListener(this);
         btnDeleteItem.addActionListener(this);
         
-        // Quantity Adjustment Sub-panel
         qtyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         qtyPanel.setBackground(myColor);
         qtyPanel.add(lblQty);
@@ -223,7 +181,6 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         qtyPanel.add(btnApplyQty);
         btnApplyQty.addActionListener(this);
         
-        // Cash Input Sub-panel
         cashInputPanel = new JPanel(new GridLayout(3, 1, 5, 5));
         cashInputPanel.setBackground(myColor);
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -244,37 +201,30 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         btnProcessPayment.addActionListener(this);
         btnReset.addActionListener(this);
         
-        // Number Pad Sub-panel with larger buttons
         numPadPanel = new JPanel(new GridLayout(4, 3, 5, 5));
         numPadPanel.setBackground(myColor);
         String[] keys = {"7", "8", "9", "4", "5", "6", "1", "2", "3", "0", ".", "Clear"};
         for(String key : keys) {
             JButton btn = new JButton(key);
             btn.setFont(new Font("Arial", Font.BOLD, 24));
-            btn.setPreferredSize(new Dimension(80, 80));
-            btn.setFocusable(false);  // so it doesn't steal focus from input fields
+            btn.setPreferredSize(new Dimension(50, 50));
+            btn.setFocusable(false);
             btn.addActionListener(this);
             numPadPanel.add(btn);
         }
-
-        // ---------------------------
-        // Logout Sub-panel with extra vertical space
-        // ---------------------------
         logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         logoutPanel.setBackground(myColor);
         logoutPanel.add(Box.createVerticalStrut(20));
         logoutPanel.add(btnLogout);
         btnLogout.addActionListener(this);
-        
-        // Add all sub-panels to Payment Panel in order
+   
         paymentPanel.add(barcodePanel);
         paymentPanel.add(qtyPanel);
         paymentPanel.add(cashInputPanel);
         paymentPanel.add(numPadPanel);
         paymentPanel.add(Box.createVerticalStrut(20));
         paymentPanel.add(logoutPanel);
-        
-        // Receipt Panel (Bottom of Right Panel)
+
         receiptPanel = new JPanel(new BorderLayout());
         receiptPanel.setBorder(BorderFactory.createTitledBorder("Receipt"));
         receiptPanel.setBackground(myColor);
@@ -285,28 +235,19 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         receiptPanel.add(recScroll, BorderLayout.CENTER);
         receiptPanel.add(btnPrintReceipt, BorderLayout.SOUTH);
         btnPrintReceipt.addActionListener(this);
-        
-        // Add Payment (top) and Receipt (bottom) to Right Panel using BorderLayout
-        // (Here we use a vertical split: Payment panel at NORTH and Receipt panel at CENTER)
+
         rightPanel.add(paymentPanel, BorderLayout.NORTH);
         rightPanel.add(receiptPanel, BorderLayout.CENTER);
         
-        // ---------------------------
-        // Main Frame Layout: add Left and Right Panels
-        // ---------------------------
+     
         add(leftPanel, BorderLayout.CENTER);
         add(rightPanel, BorderLayout.EAST);
         
-        // Load Inventory Data
         loadInventoryData();
         
-        // Do not display any receipt initially; wait until payment is processed.
         receiptArea.setText("");
     }
     
-    // ---------------------------
-    // Inventory Data Methods
-    // ---------------------------
     private void loadInventoryData() {
         inventoryMap.clear();
         String filename = "inventory.txt";
@@ -337,10 +278,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
             ex.printStackTrace();
         }
     }
-    
-    // ---------------------------
-    // Transaction Methods
-    // ---------------------------
+   
     private void addItemToTransaction(String barcode) {
         if(barcode.isEmpty()) return;
         if(!inventoryMap.containsKey(barcode)) {
@@ -386,11 +324,11 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
     }
     
     private void increaseQuantity() {
-        // (Increase/Decrease functions removed as per your request.)
+       
     }
     
     private void decreaseQuantity() {
-        // (Increase/Decrease functions removed as per your request.)
+
     }
     
     private void updateTotal() {
@@ -402,9 +340,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         lblTotal.setText("Total: ₱" + String.format("%.2f", total));
     }
     
-    // ---------------------------
-    // Payment and Receipt Methods
-    // ---------------------------
+    
     private void processPayment() {
         double total = 0.0;
         for(int i = 0; i < transactionModel.getRowCount(); i++) {
@@ -428,26 +364,21 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         updateInventoryAfterSale();
     }
     
-    // Updated generateReceipt method with columns formatted for a 58mm printer (42 characters per line)
+ 
     private void generateReceipt(double total, double cash, double balance) {
         receiptArea.setText("");
         
-        // Header section
         receiptArea.append("         \n\n");
         receiptArea.append("         PENTAGRAM RECEIPT\n");
         receiptArea.append("---------------------------------------------------------------\n");
         
-        // Date and time
+     
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm a");
         receiptArea.append("Date: " + dateFormat.format(new Date()) + "\n\n");
         
-        // Column headers (without barcode)
-        // Adjust the column widths as needed. Here, "Item" gets 30 characters, then Qty is 5,
-        // Price and Subtotal are 10 characters each.
         receiptArea.append(String.format("%-3s %-5s %-5s %-5s\n", "Qty ->", "Item ->", "Price ->", "Subtotal"));
         receiptArea.append("---------------------------------------------------------------\n");
         
-        // Loop through each transaction row and print item details (without barcode)
         for (int i = 0; i < transactionModel.getRowCount(); i++) {
             String itemName = transactionModel.getValueAt(i, 1).toString();
             String qty = transactionModel.getValueAt(i, 2).toString();
@@ -455,33 +386,21 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
             String subtotal = transactionModel.getValueAt(i, 4).toString();
             receiptArea.append(String.format("%-3s %-31s %-10s %-5s\n", qty, itemName,  price, subtotal));
         }
-        
         receiptArea.append("---------------------------------------------------------------\n");
-        
-        // Totals
         receiptArea.append("Total:   P" + String.format("%.2f", total) + "\n");
         receiptArea.append("Cash:    P" + String.format("%.2f", cash) + "\n");
         receiptArea.append("Balance: P" + String.format("%.2f", balance) + "\n\n\n\n");
-        
-        // Footer message, centered if needed
         receiptArea.append("      THANK YOU FOR SHOPPING!\n");
         receiptArea.append("         \n\n\n\n");
     }
-
-    // ---------------------------
-    // Direct Printing Method (Replacing saveReceiptAsImage)
-    // ---------------------------
+    
     private void printReceiptDirect() {
         try {
-            // Get the receipt content from the text area.
             String receiptText = receiptArea.getText();
-            // Convert to bytes (using UTF-8 encoding)
             byte[] receiptBytes = receiptText.getBytes("UTF-8");
-            // Set up the print job using a BYTE_ARRAY flavor
             DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
             PrintService[] printServices = PrintServiceLookup.lookupPrintServices(flavor, null);
             if (printServices.length > 0) {
-                // Look for a printer containing "xprinter-58" in its name (case-insensitive)
                 PrintService selectedService = printServices[0];
                 for (PrintService service : printServices) {
                     if (service.getName().toLowerCase().contains("xprinter-58")) {
@@ -527,13 +446,9 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         txtQty.setText("");
         lblTotal.setText("Total: ₱0.00");
         lblBalance.setText("Balance: ₱0.00");
-        // Clear the receipt area after reset.
         receiptArea.setText("");
     }
-    
-    // ---------------------------
-    // New Quantity Adjustment Method
-    // ---------------------------
+   
     private void applyQuantityAdjustment() {
         int selectedRow = transactionTable.getSelectedRow();
         if(selectedRow == -1) {
@@ -562,9 +477,6 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         }
     }
     
-    // ---------------------------
-    // Action Handling
-    // ---------------------------
     @Override
     public void actionPerformed(ActionEvent e) {
         Object src = e.getSource();
@@ -582,7 +494,6 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         else if(src == btnReset) {
             resetSale();
         }
-        // Now printing receipt instead of saving image.
         else if(src == btnPrintReceipt) {
             printReceiptDirect();
         }
@@ -593,7 +504,6 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         else if(src == btnApplyQty) {
             applyQuantityAdjustment();
         }
-        // Number Pad Actions:
         else if(src instanceof JButton) {
             String cmd = e.getActionCommand();
             if(cmd.equals("Clear")) {
@@ -629,9 +539,6 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
     @Override
     public void stateChanged(ChangeEvent e) { }
     
-    // ---------------------------
-    // Main Method
-    // ---------------------------
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Cashier pos = new Cashier();

@@ -12,34 +12,27 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private Login loginInstance;
 
-    JPanel p1 = new JPanel(); // Keep manual layout for precise positioning
+    JPanel p1 = new JPanel(); 
     JPanel p2 = new JPanel();
     Color myColor = new Color(193, 234, 242);
     
-    // Labels
     JLabel lblregName = new JLabel("Name: ");
     JLabel lblregUsername = new JLabel("Username: ");
     JLabel lblregPassword = new JLabel("Password: ");
     
-    // Text Fields
     JTextField txtregName = new JTextField();
     JTextField txtregUsername = new JTextField();
     JPasswordField txtregPassword = new JPasswordField();
-    
-    // Buttons
+
     JButton btnregLogin = new JButton("Register");
     JButton btnregCancel = new JButton("Cancel");
-    
-    // Fonts
+
     Font font = new Font("Montserrat", Font.BOLD, 15);
     Font font2 = new Font("Montserrat", Font.BOLD, 20);
 
-    private static final String FILE_NAME = "users.txt"; // File to store users
-
-    // Image Icons
+    private static final String FILE_NAME = "users.txt"; 
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
 
-    // Background
     ImageIcon BLogo = new ImageIcon("./img/logo-dark-transparent.png");
     Image img = BLogo.getImage();
     Image newLogo = img.getScaledInstance(350, 80, java.awt.Image.SCALE_SMOOTH);
@@ -84,7 +77,6 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
         p1.setBackground(myColor);
         p1.setBorder(null);
 
-        // Position Components
         newRegis.setBounds(130, 100, 250, 30);
         newRegis.setFont(font2);
         
@@ -108,12 +100,12 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
         btnregLogin.setFont(font);
         btnregLogin.addActionListener(this);
 
-        this.loginInstance = loginInstance; // Store the reference
+        this.loginInstance = loginInstance; 
     }
 
     public static void main(String[] args) {
-        Login loginInstance = new Login(); // Ensure a Login instance exists
-        new Add(loginInstance).setVisible(true); // Pass Login reference
+        Login loginInstance = new Login(); 
+        new Add(loginInstance).setVisible(true); 
     }
 
     @Override
@@ -137,7 +129,7 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
                 if (isUsernameTaken(user)) {
                     JOptionPane.showMessageDialog(null, "Username already exists! Please choose a different one.", "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    saveUserToFile(name, user, pass); // Save user credentials including Name
+                    saveUserToFile(name, user, pass); 
                     JOptionPane.showMessageDialog(null, "User registered successfully!", "Registration", JOptionPane.INFORMATION_MESSAGE);
                     setVisible(false);
                 }
@@ -154,14 +146,14 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length > 1 && parts[1].equals(username)) { // Verify using Username column
-                    return true; // Username found
+                if (parts.length > 1 && parts[1].equals(username)) {
+                    return true; 
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false; // Username not found
+        return false;
     }
 
     private void saveUserToFile(String name, String user, String pass) {
@@ -169,7 +161,7 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
 
-            out.println(name + "," + user + "," + pass); // Store Name, Username, Password
+            out.println(name + "," + user + "," + pass); 
         } catch (IOException e) {
             e.printStackTrace();
         }

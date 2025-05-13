@@ -9,22 +9,18 @@ import java.io.*;
 
 public class Admin extends JFrame implements ActionListener {
 
-    // Buttons
     JButton btnAdd = new JButton("Add");
     JButton btnEdit = new JButton("Edit");
     JButton btnDel = new JButton("Delete");
     JButton btnRefresh = new JButton("Refresh");
     JButton btnLogout = new JButton("Back");
-
-    // Table setup (Now includes Name column)
+    
     private DefaultTableModel tableModel;
     private JTable userTable;
     private static final String FILE_NAME = "users.txt";
 
-    // Image Icons
     ImageIcon logo = new ImageIcon("./img/logo-icon-dark-transparent.png");
-
-    // Color
+    
     Color myColor = new Color(193, 234, 242);
 
     public Admin() {
@@ -37,7 +33,6 @@ public class Admin extends JFrame implements ActionListener {
         setIconImage(logo.getImage());
         getContentPane().setBackground(myColor);
 
-        // Buttons (Aligned in a row)
         add(btnAdd);
         add(btnEdit);
         add(btnDel);
@@ -55,12 +50,11 @@ public class Admin extends JFrame implements ActionListener {
         btnDel.addActionListener(this);
         btnRefresh.addActionListener(this);
         btnLogout.addActionListener(this);
-
-        // JTable Setup (Updated with Name, Username, and Password columns)
+        
         tableModel = new DefaultTableModel(new String[]{"Name", "Username", "Password"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Prevent manual editing
+                return false; 
             }
         };
 
@@ -69,15 +63,13 @@ public class Admin extends JFrame implements ActionListener {
         scrollPane.setBounds(10, 50, 460, 500);
         add(scrollPane);
 
-        // Apply Password Renderer to mask the password column.
         userTable.getColumnModel().getColumn(2).setCellRenderer(new PasswordRenderer());
 
         loadUsers();
     }
 
-    // Custom Renderer to Mask Passwords (always displays ****)
     class PasswordRenderer extends DefaultTableCellRenderer {
-        private boolean showPasswords = false; // If set to true, passwords display in plain text.
+        private boolean showPasswords = false; 
         @Override
         protected void setValue(Object value) {
             if (value != null && !showPasswords) {
@@ -89,12 +81,12 @@ public class Admin extends JFrame implements ActionListener {
     }
 
     private void loadUsers() {
-        tableModel.setRowCount(0); // Clear table before loading
+        tableModel.setRowCount(0);
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 3) { // Format: Name, Username, Password
+                if (parts.length == 3) { 
                     tableModel.addRow(new String[]{parts[0].trim(), parts[1].trim(), parts[2].trim()});
                 }
             }
@@ -118,7 +110,6 @@ public class Admin extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ev) {
         if (ev.getSource() == btnAdd) {
-            // Launch the Add User dialog (assumes an Add class exists)
             Login loginInstance = new Login();
             new Add(loginInstance).setVisible(true);
         } else if (ev.getSource() == btnEdit) {
@@ -127,8 +118,6 @@ public class Admin extends JFrame implements ActionListener {
                 String currentName = tableModel.getValueAt(selectedRow, 0).toString();
                 String currentUsername = tableModel.getValueAt(selectedRow, 1).toString();
                 String currentPassword = tableModel.getValueAt(selectedRow, 2).toString();
-                
-                // Use a JPasswordField to mask the input
                 JPasswordField pf = new JPasswordField();
                 int okCxl = JOptionPane.showConfirmDialog(this, pf, "Enter user current password to confirm:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                 if (okCxl == JOptionPane.OK_OPTION) {
@@ -136,7 +125,6 @@ public class Admin extends JFrame implements ActionListener {
                     if (enteredPassword.equals(currentPassword)) {
                         String newName = JOptionPane.showInputDialog("Enter new name:", currentName);
                         String newUsername = JOptionPane.showInputDialog("Enter new username:", currentUsername);
-                        // Use a JPasswordField for editing the new password
                         JPasswordField pfNew = new JPasswordField();
                         int okNew = JOptionPane.showConfirmDialog(this, pfNew, "Enter new password:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                         if (okNew == JOptionPane.OK_OPTION) {
@@ -159,7 +147,6 @@ public class Admin extends JFrame implements ActionListener {
         } else if (ev.getSource() == btnDel) {
             int selectedRow = userTable.getSelectedRow();
             if (selectedRow != -1) {
-                // Use a JPasswordField to mask deletion password confirmation
                 JPasswordField pf = new JPasswordField();
                 int okCxl = JOptionPane.showConfirmDialog(this, pf, "Enter admin password to delete:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                 if (okCxl == JOptionPane.OK_OPTION) {
