@@ -13,6 +13,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import javax.print.Doc;
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
+import javax.print.SimpleDoc;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Copies;
+import javax.print.attribute.standard.JobName;
 
 public class Cashier extends JFrame implements ActionListener, ItemListener, ChangeListener {
 
@@ -82,7 +92,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
     private JPanel receiptPanel;
     private JTextArea receiptArea = new JTextArea();
     private JScrollPane receiptScroll = new JScrollPane(receiptArea);
-    private JButton btnSaveReceipt = new JButton("Save Receipt as Image");
+    private JButton btnPrintReceipt = new JButton("Print Receipt");
 
     // ---------------------------
     // Inventory Data
@@ -110,9 +120,19 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
     Image newLogo = img.getScaledInstance(350, 80, Image.SCALE_SMOOTH);
     ImageIcon Logo = new ImageIcon(newLogo);
 
+    // Helper method to center text within a given width.
+    private String centerText(String text, int width) {
+        int padSize = (width - text.length()) / 2;
+        StringBuilder padding = new StringBuilder();
+        for (int i = 0; i < padSize; i++) {
+            padding.append(" ");
+        }
+        return padding.toString() + text;
+    }
+
     public Cashier() {
         // Frame Settings
-    	setUndecorated(true);
+        setUndecorated(true);
         setTitle("Pentagram POS (Point-of-Sale) System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -236,8 +256,10 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
             btn.addActionListener(this);
             numPadPanel.add(btn);
         }
-        
+
+        // ---------------------------
         // Logout Sub-panel with extra vertical space
+        // ---------------------------
         logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         logoutPanel.setBackground(myColor);
         logoutPanel.add(Box.createVerticalStrut(20));
@@ -261,8 +283,8 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         JScrollPane recScroll = new JScrollPane(receiptArea);
         recScroll.getViewport().setBackground(myColor);
         receiptPanel.add(recScroll, BorderLayout.CENTER);
-        receiptPanel.add(btnSaveReceipt, BorderLayout.SOUTH);
-        btnSaveReceipt.addActionListener(this);
+        receiptPanel.add(btnPrintReceipt, BorderLayout.SOUTH);
+        btnPrintReceipt.addActionListener(this);
         
         // Add Payment (top) and Receipt (bottom) to Right Panel using BorderLayout
         // (Here we use a vertical split: Payment panel at NORTH and Receipt panel at CENTER)
@@ -278,9 +300,8 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         // Load Inventory Data
         loadInventoryData();
         
-        // Initialize Receipt Header
-        receiptArea.setText("               Pentagram POS Receipt\n");
-        receiptArea.append("-------------------------------------------------------------\n");
+        // Do not display any receipt initially; wait until payment is processed.
+        receiptArea.setText("");
     }
     
     // ---------------------------
@@ -407,48 +428,79 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         updateInventoryAfterSale();
     }
     
+    // Updated generateReceipt method with columns formatted for a 58mm printer (42 characters per line)
     private void generateReceipt(double total, double cash, double balance) {
         receiptArea.setText("");
-        receiptArea.append("               Pentagram POS Receipt\n");
-        receiptArea.append("-------------------------------------------------------------\n");
+        
+        // Header section
+        receiptArea.append("         \n\n");
+        receiptArea.append("    Pentagram Receipt\n");
+        receiptArea.append("---------------------------------------------------------------\n");
+        
+        // Date and time
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd hh:mm a");
         receiptArea.append("Date: " + dateFormat.format(new Date()) + "\n\n");
-        receiptArea.append(String.format("%-10s %-30s %-5s %-10s %-10s\n", "Barcode", "Item", "Qty", "Price", "Subtotal"));
-        receiptArea.append("-------------------------------------------------------------\n");
-        for(int i = 0; i < transactionModel.getRowCount(); i++) {
-            String barcode = transactionModel.getValueAt(i, 0).toString();
+        
+        // Column headers (without barcode)
+        // Adjust the column widths as needed. Here, "Item" gets 30 characters, then Qty is 5,
+        // Price and Subtotal are 10 characters each.
+        receiptArea.append(String.format("%-30s %-5s %-10s %-10s\n", "Item", "Qty", "Price", "Subtotal"));
+        receiptArea.append("---------------------------------------------------------------\n");
+        
+        // Loop through each transaction row and print item details (without barcode)
+        for (int i = 0; i < transactionModel.getRowCount(); i++) {
             String itemName = transactionModel.getValueAt(i, 1).toString();
             String qty = transactionModel.getValueAt(i, 2).toString();
             String price = transactionModel.getValueAt(i, 3).toString();
             String subtotal = transactionModel.getValueAt(i, 4).toString();
-            receiptArea.append(String.format("%-10s %-30s %-5s %-10s %-10s\n", barcode, itemName, qty, price, subtotal));
+            receiptArea.append(String.format("%-30s %-5s %-10s %-10s\n", itemName, qty, price, subtotal));
         }
-        receiptArea.append("-------------------------------------------------------------\n");
-        receiptArea.append("Total:   ₱" + String.format("%.2f", total) + "\n");
-        receiptArea.append("Cash:    ₱" + String.format("%.2f", cash) + "\n");
-        receiptArea.append("Balance: ₱" + String.format("%.2f", balance) + "\n\n");
-        receiptArea.append("         THANK YOU FOR SHOPPING!\n");
+        
+        receiptArea.append("---------------------------------------------------------------\n");
+        
+        // Totals
+        receiptArea.append("Total:   P" + String.format("%.2f", total) + "\n");
+        receiptArea.append("Cash:    P" + String.format("%.2f", cash) + "\n");
+        receiptArea.append("Balance: P" + String.format("%.2f", balance) + "\n\n\n\n");
+        
+        // Footer message, centered if needed
+        receiptArea.append("    THANK YOU FOR SHOPPING!\n");
+        receiptArea.append("         \n\n\n\n");
     }
-    
-    private void saveReceiptAsImage() {
+
+    // ---------------------------
+    // Direct Printing Method (Replacing saveReceiptAsImage)
+    // ---------------------------
+    private void printReceiptDirect() {
         try {
-            Dimension size = receiptArea.getPreferredSize();
-            BufferedImage image = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2d = image.createGraphics();
-            g2d.setColor(Color.WHITE);
-            g2d.fillRect(0, 0, size.width, size.height);
-            receiptArea.setOpaque(true);
-            receiptArea.setBackground(Color.WHITE);
-            receiptArea.setSize(size);
-            receiptArea.paint(g2d);
-            g2d.dispose();
-            File file = new File("receipt.png");
-            ImageIO.write(image, "png", file);
-            JOptionPane.showMessageDialog(this, "Receipt saved as " + file.getAbsolutePath(), "Success", JOptionPane.INFORMATION_MESSAGE);
-            resetSale();
-        } catch(IOException ex) {
-            JOptionPane.showMessageDialog(this, "Error saving image: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            // Get the receipt content from the text area.
+            String receiptText = receiptArea.getText();
+            // Convert to bytes (using UTF-8 encoding)
+            byte[] receiptBytes = receiptText.getBytes("UTF-8");
+            // Set up the print job using a BYTE_ARRAY flavor
+            DocFlavor flavor = DocFlavor.BYTE_ARRAY.AUTOSENSE;
+            PrintService[] printServices = PrintServiceLookup.lookupPrintServices(flavor, null);
+            if (printServices.length > 0) {
+                // Look for a printer containing "xprinter-58" in its name (case-insensitive)
+                PrintService selectedService = printServices[0];
+                for (PrintService service : printServices) {
+                    if (service.getName().toLowerCase().contains("xprinter-58")) {
+                        selectedService = service;
+                        break;
+                    }
+                }
+                DocPrintJob printJob = selectedService.createPrintJob();
+                Doc doc = new SimpleDoc(receiptBytes, flavor, null);
+                PrintRequestAttributeSet attributes = new HashPrintRequestAttributeSet();
+                attributes.add(new Copies(1));
+                attributes.add(new JobName("Pentagram POS Receipt", null));
+                printJob.print(doc, attributes);
+            } else {
+                JOptionPane.showMessageDialog(this, "No printer found! Please check your USB printer connection.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch(Exception ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Printing error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -475,8 +527,8 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         txtQty.setText("");
         lblTotal.setText("Total: ₱0.00");
         lblBalance.setText("Balance: ₱0.00");
-        receiptArea.setText("               Pentagram POS Receipt\n");
-        receiptArea.append("-------------------------------------------------------------\n");
+        // Clear the receipt area after reset.
+        receiptArea.setText("");
     }
     
     // ---------------------------
@@ -530,12 +582,13 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         else if(src == btnReset) {
             resetSale();
         }
-        else if(src == btnSaveReceipt) {
-            saveReceiptAsImage();
+        // Now printing receipt instead of saving image.
+        else if(src == btnPrintReceipt) {
+            printReceiptDirect();
         }
         else if(src == btnLogout) {
             new SelectionCashier().setVisible(true);
-            dispose();
+            setVisible(false);
         }
         else if(src == btnApplyQty) {
             applyQuantityAdjustment();

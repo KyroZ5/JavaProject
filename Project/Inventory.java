@@ -68,7 +68,7 @@ public class Inventory extends JFrame implements ActionListener {
         
         // Control Panel Setup
         controlPanel.setLayout(new FlowLayout());
-        controlPanel.setBorder(BorderFactory.createTitledBorder("Admin Controls"));
+        controlPanel.setBorder(BorderFactory.createTitledBorder("Controls"));
         controlPanel.setBackground(myColor);
 
         controlPanel.add(btnAdd);
@@ -76,7 +76,13 @@ public class Inventory extends JFrame implements ActionListener {
         controlPanel.add(btnDelete);
         controlPanel.add(btnRefresh);
         controlPanel.add(btnBack);
-
+       
+        btnAdd.setEnabled(false);
+        btnEdit.setEnabled(false);
+        btnDelete.setEnabled(false);
+        btnRefresh.setEnabled(false);
+        
+        btnBack.addActionListener(this);
         btnAdd.addActionListener(this);
         btnEdit.addActionListener(this);
         btnDelete.addActionListener(this);
@@ -192,7 +198,8 @@ public class Inventory extends JFrame implements ActionListener {
             loadInventory();
             JOptionPane.showMessageDialog(this, "Inventory refreshed!", "Info", JOptionPane.INFORMATION_MESSAGE);
         } else if (e.getSource() == btnBack) {
-            new SelectionAdmin().setVisible(true);
+        	SelectionCashier login = new SelectionCashier();
+            login.setVisible(true);
             setVisible(false);
         }
     }
