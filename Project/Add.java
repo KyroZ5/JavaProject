@@ -146,6 +146,8 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
             }
         } else if (ev.getSource() == btnregCancel) {
             setVisible(false);
+            Admin admin = new Admin();
+            admin.setVisible(true);
         }
     }
 
