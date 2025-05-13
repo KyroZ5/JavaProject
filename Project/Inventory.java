@@ -41,7 +41,6 @@ public class Inventory extends JFrame implements ActionListener {
         setTitle("Inventory System");
         setLayout(new BorderLayout());
         setIconImage(logo.getImage());
-        //getContentPane().setBackground(myColor); // Background fix
 
         // Inventory Table Setup (Non-Editable)
         tableModel = new DefaultTableModel(new String[]{"Barcode", "Item Name", "Stock", "Price (₱)"}, 0) {
@@ -111,7 +110,6 @@ public class Inventory extends JFrame implements ActionListener {
     private void saveInventory() {
         try (PrintWriter out = new PrintWriter(new FileWriter(FILE_NAME))) {
             for (int i = 0; i < tableModel.getRowCount(); i++) {
-                // Remove the peso sign before saving
                 String price = tableModel.getValueAt(i, 3).toString().replace("₱", "");
                 out.println(
                         tableModel.getValueAt(i, 0) + "," +
@@ -147,31 +145,26 @@ public class Inventory extends JFrame implements ActionListener {
                 String currentStock = tableModel.getValueAt(selectedRow, 2).toString();
                 String currentPrice = tableModel.getValueAt(selectedRow, 3).toString().replace("₱", "");
 
-                // Password Confirmation Before Editing
-                String enteredPassword = JOptionPane.showInputDialog("Enter admin password to confirm:");
-                if (enteredPassword != null && enteredPassword.equals("admin")) { 
-                    String newItem = JOptionPane.showInputDialog("Edit item name:", currentItem);
-                    String newStock = JOptionPane.showInputDialog("Edit stock quantity:", currentStock);
-                    String newPrice = JOptionPane.showInputDialog("Edit price:", currentPrice);
+                // 🔒 Mask password input using JPasswordField
+                JPasswordField pf = new JPasswordField();
+                int okCxl = JOptionPane.showConfirmDialog(this, pf, "Enter admin password to confirm:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                if (okCxl == JOptionPane.OK_OPTION) {
+                    String enteredPassword = new String(pf.getPassword());
+                    if (enteredPassword.equals("admin")) {
+                        String newItem = JOptionPane.showInputDialog("Edit item name:", currentItem);
+                        String newStock = JOptionPane.showInputDialog("Edit stock quantity:", currentStock);
+                        String newPrice = JOptionPane.showInputDialog("Edit price:", currentPrice);
 
-                    if (newItem != null && newStock != null && newPrice != null) {
-                        try {
-                            int newStockVal = Integer.parseInt(newStock.trim());
-                            if (newStockVal < 0) {
-                                JOptionPane.showMessageDialog(this, "Stock cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE);
-                                return;
-                            }
+                        if (newItem != null && newStock != null && newPrice != null) {
                             tableModel.setValueAt(newItem.trim(), selectedRow, 1);
-                            tableModel.setValueAt(newStockVal, selectedRow, 2);
+                            tableModel.setValueAt(newStock.trim(), selectedRow, 2);
                             tableModel.setValueAt("₱" + newPrice.trim(), selectedRow, 3);
                             saveInventory();
                             JOptionPane.showMessageDialog(this, "Item updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                        } catch(NumberFormatException ex) {
-                            JOptionPane.showMessageDialog(this, "Invalid stock value.", "Error", JOptionPane.ERROR_MESSAGE);
                         }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Incorrect password! Edit failed.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Incorrect password! Edit failed.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Select an item to edit.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -179,14 +172,18 @@ public class Inventory extends JFrame implements ActionListener {
         } else if (e.getSource() == btnDelete) {
             int selectedRow = inventoryTable.getSelectedRow();
             if (selectedRow != -1) {
-                // Password Confirmation Before Deleting
-                String enteredPassword = JOptionPane.showInputDialog("Enter admin password to confirm deletion:");
-                if (enteredPassword != null && enteredPassword.equals("admin")) {
-                    tableModel.removeRow(selectedRow);
-                    saveInventory();
-                    JOptionPane.showMessageDialog(this, "Item deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Incorrect password! Deletion failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                // 🔒 Mask password input using JPasswordField
+                JPasswordField pf = new JPasswordField();
+                int okCxl = JOptionPane.showConfirmDialog(this, pf, "Enter admin password to confirm deletion:", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                if (okCxl == JOptionPane.OK_OPTION) {
+                    String enteredPassword = new String(pf.getPassword());
+                    if (enteredPassword.equals("admin")) {
+                        tableModel.removeRow(selectedRow);
+                        saveInventory();
+                        JOptionPane.showMessageDialog(this, "Item deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Incorrect password! Deletion failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Select an item to delete.", "Error", JOptionPane.ERROR_MESSAGE);
