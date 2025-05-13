@@ -177,7 +177,7 @@ public class Admin extends JFrame implements ActionListener {
             }
         } else if (ev.getSource() == btnRefresh) {
             loadUsers();
-            JOptionPane.showMessageDialog(this, "User list refreshed!", "Info", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "List refreshed!", "Info", JOptionPane.INFORMATION_MESSAGE);
         } else if (ev.getSource() == btnLogout) {
             new SelectionAdmin().setVisible(true);
             setVisible(false);

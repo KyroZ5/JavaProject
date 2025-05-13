@@ -144,10 +144,8 @@ public class Add extends JFrame implements ActionListener, ItemListener, ChangeL
             } else {
                 JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } else if (ev.getSource() == btnregCancel) {
-            setVisible(false);
-            Admin admin = new Admin();
-            admin.setVisible(true);
+        }else if (ev.getSource() == btnregCancel) {
+   	        setVisible(false);
         }
     }
 

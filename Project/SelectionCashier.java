@@ -67,7 +67,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
 	    btnCashier.setBounds(140,40,80,80);
 	    btnAdmin.setBounds(240,40,80,80);
 	    lblInven.setBounds(45,95,120,80);
-	    lblInven.setEnabled(false); 
+	    lblInven.setEnabled(true); 
         lblInven.setFont(font);
 	    lblCashier.setBounds(157,95,120,80);
         lblCashier.setFont(font);
@@ -81,7 +81,7 @@ public class SelectionCashier extends JFrame implements ActionListener{
 	    btnLogout.setEnabled(true); 
 	    btnCashier.setEnabled(true); 
 	    btnAdmin.setEnabled(false);
-	    btnInventory.setEnabled(false);
+	    btnInventory.setEnabled(true);
 	    btnLogout.addActionListener(this); 
 	    btnCashier.addActionListener(this); 
 	    btnAdmin.addActionListener(this);
@@ -98,22 +98,31 @@ public class SelectionCashier extends JFrame implements ActionListener{
 
     @Override
    	public void actionPerformed(ActionEvent ev) {
-   		if(ev.getSource()==btnLogout) {
-   		 int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?", "Logging out", JOptionPane.YES_NO_OPTION);
-         if (x == JOptionPane.YES_OPTION) {
-       	  Login log = new Login();
-             log.setVisible(true);
-             setVisible(false);
-         }else if(x == JOptionPane.NO_OPTION) {
-       	  
-         }
-   			setVisible(false);
- 
-   		}else if(ev.getSource()==btnCashier) {
-   			Cashier login = new Cashier();
-   			login.setVisible(true);
-   			setVisible(false);
+   		if(ev.getSource()==btnCashier) {
+   	        Cashier pos = new Cashier();
+            pos.setVisible(true);
+            setVisible(false);
+   			
+   		}else if(ev.getSource()==btnAdmin) {
+   			Admin login = new Admin();
+   	        login.setVisible(true);
+   	        setVisible(false);
+   			
+   		}else if(ev.getSource()==btnInventory) {
+   			Inventory login = new Inventory();
+   	        login.setVisible(true);
+   	        setVisible(false);
+   			
+   		}else if(ev.getSource()==btnLogout) {
+          int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?", "Logging out", JOptionPane.YES_NO_OPTION);
+          if (x == JOptionPane.YES_OPTION) {
+        	  Login log = new Login();
+              log.setVisible(true);
+              setVisible(false);
+          }else if(x == JOptionPane.NO_OPTION) {
+        	  
+          }
    		}
    	}
-   }
+  }
 

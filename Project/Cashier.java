@@ -86,7 +86,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
 
     // Logout Sub-panel
     private JPanel logoutPanel;
-    private JButton btnLogout = new JButton("Logout");
+    private JButton btnLogout = new JButton("Menu");
 
     // Receipt Panel (bottom)
     private JPanel receiptPanel;
@@ -434,7 +434,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         
         // Header section
         receiptArea.append("         \n\n");
-        receiptArea.append("    Pentagram Receipt\n");
+        receiptArea.append("         PENTAGRAM RECEIPT\n");
         receiptArea.append("---------------------------------------------------------------\n");
         
         // Date and time
@@ -444,7 +444,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         // Column headers (without barcode)
         // Adjust the column widths as needed. Here, "Item" gets 30 characters, then Qty is 5,
         // Price and Subtotal are 10 characters each.
-        receiptArea.append(String.format("%-30s %-5s %-10s %-10s\n", "Item", "Qty", "Price", "Subtotal"));
+        receiptArea.append(String.format("%-3s %-5s %-5s %-5s\n", "Qty ->", "Item ->", "Price ->", "Subtotal"));
         receiptArea.append("---------------------------------------------------------------\n");
         
         // Loop through each transaction row and print item details (without barcode)
@@ -453,7 +453,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
             String qty = transactionModel.getValueAt(i, 2).toString();
             String price = transactionModel.getValueAt(i, 3).toString();
             String subtotal = transactionModel.getValueAt(i, 4).toString();
-            receiptArea.append(String.format("%-30s %-5s %-10s %-10s\n", itemName, qty, price, subtotal));
+            receiptArea.append(String.format("%-3s %-31s %-10s %-5s\n", qty, itemName,  price, subtotal));
         }
         
         receiptArea.append("---------------------------------------------------------------\n");
@@ -464,7 +464,7 @@ public class Cashier extends JFrame implements ActionListener, ItemListener, Cha
         receiptArea.append("Balance: P" + String.format("%.2f", balance) + "\n\n\n\n");
         
         // Footer message, centered if needed
-        receiptArea.append("    THANK YOU FOR SHOPPING!\n");
+        receiptArea.append("      THANK YOU FOR SHOPPING!\n");
         receiptArea.append("         \n\n\n\n");
     }
 
