@@ -119,9 +119,14 @@ public class SelectionAdmin extends JFrame implements ActionListener{
    	        setVisible(false);
    			
    		}else if(ev.getSource()==btnLogout) {
-   		  Login log = new Login();
-          log.setVisible(true);
-   			this.dispose();
+          int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?", "Logging out", JOptionPane.YES_NO_OPTION);
+          if (x == JOptionPane.YES_OPTION) {
+        	  Login log = new Login();
+              log.setVisible(true);
+              setVisible(false);
+          }else if(x == JOptionPane.NO_OPTION) {
+        	  
+          }
    		}
    	}
   }

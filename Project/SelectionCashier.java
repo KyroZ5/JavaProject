@@ -99,8 +99,14 @@ public class SelectionCashier extends JFrame implements ActionListener{
     @Override
    	public void actionPerformed(ActionEvent ev) {
    		if(ev.getSource()==btnLogout) {
-   			Login log = new Login();
-   			log.setVisible(true);
+   		 int x = JOptionPane.showConfirmDialog(null, "Are you sure you want to logout?", "Logging out", JOptionPane.YES_NO_OPTION);
+         if (x == JOptionPane.YES_OPTION) {
+       	  Login log = new Login();
+             log.setVisible(true);
+             setVisible(false);
+         }else if(x == JOptionPane.NO_OPTION) {
+       	  
+         }
    			setVisible(false);
  
    		}else if(ev.getSource()==btnCashier) {
